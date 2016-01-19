@@ -7,13 +7,12 @@ public class GameTree {
 	ArrayList<ArrayList<ArrayList<Board>>> fullTree;
 	
 	//Constants
-	private final static int MAX_NUMBER_BRANCHES = 10000; //TODO: Test if this causes any memory issues
+	private final static int MAX_NUMBER_BRANCHES = 10000; 
 	
 	//Base constructor
 	public GameTree(Board root)
 	{
 		this.rootBoard = root;
-		//int maxNumberMoves = (rootBoard.getRows() * rootBoard.getCols()) + 2;
 	}
 	
 	public ArrayList<Board> generateBoards(Board board, int originalDepth)
