@@ -12,6 +12,10 @@ public class Board {
 	private int n; //The number of pieces in a row to win
 	private int evaluationValue; //The evaluation value of the current board state
 	
+	//Constants
+	private final static int P1 = 1;
+	private final static int P2 = 2;
+	
 	//Constructor for creating a new board.
 	//rows is the number of rows on the board
 	//cols is the number of cols on the board
@@ -74,7 +78,7 @@ public class Board {
 	}
 	
 	//Getter for the board
-	public int[][] getBoard(){
+	public int[][] getBoardArray(){
 		return board;
 	}
 	
@@ -88,5 +92,16 @@ public class Board {
 	{
 		this.turn = turn;
 	}
+	
+	public int getRows()
+	{
+		return this.rows;
+	}
+	
+	public int getCols()
+	{
+		return this.cols;
+	}
 }
+
 
