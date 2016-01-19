@@ -11,11 +11,12 @@ public class Board {
 	private int turn; //Whos turn it is. 1 represents player 1's turn, 2 represents player 2's turn
 	private int n; //The number of pieces in a row to win
 	private int evaluationValue; //The evaluation value of the current board state
-	
+	private Move parentMove; 
+
 	//Constants
-	private final static int P1 = 1;
-	private final static int P2 = 2;
-	
+	public final static int P1 = 1;
+	public final static int P2 = 2;
+
 	//Constructor for creating a new board.
 	//rows is the number of rows on the board
 	//cols is the number of cols on the board
@@ -51,7 +52,7 @@ public class Board {
 	
 	//Updated the board to account for making the passed move 
 	public void makeMove(Move move){
-	
+		//TODO make this return a Board
 		//TODO if the move type is pop
 		//If the move type of is put
 		if (move.getType() == 1){
@@ -101,6 +102,22 @@ public class Board {
 	public int getCols()
 	{
 		return this.cols;
+	}
+	
+	public Move getParentMove() {
+		return parentMove;
+	}
+
+	public void setParentMove(Move parentMove) {
+		this.parentMove = parentMove;
+	}
+	
+	public int getEvaluationValue() {
+		return evaluationValue;
+	}
+
+	public void setEvaluationValue(int evaluationValue) {
+		this.evaluationValue = evaluationValue;
 	}
 }
 
