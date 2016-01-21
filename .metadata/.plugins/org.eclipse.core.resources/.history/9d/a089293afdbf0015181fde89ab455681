@@ -4,6 +4,7 @@ public class Move {
 	
 	private int type;	//The type of the move, 1 is put, 0 is pop
 	private int col; 	//The column number of the move
+	private int value;
 
 	//Constructor
 	//type is the type of move
@@ -21,5 +22,13 @@ public class Move {
 	//Getter for the col of the move
 	public int getCol(){
 		return col;
+	}
+	
+	public int getValue() {
+		return value;
+	}
+
+	public void setValue(int value) {
+		this.value = value;
 	}
 }

@@ -1,8 +1,4 @@
-/*
- * 
- * NOTE: THIS ASSUMES OLDBOARD IS STILL CALLED BOARD
- * 
- * import java.util.ArrayList;
+/*import java.util.ArrayList;
 
 public class GameTree {
 	//Variables

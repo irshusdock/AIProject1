@@ -2,7 +2,7 @@
 //Class for a board state. Includes the locations of pieces in the board, checks on if pops have been used, and whose turn it is
 
 import java.util.ArrayList;
-public class Board {
+public class Board2 {
 	
 	private int[][] boardState; //The board. 0s represent empty spaces, 1's represent player 1's pieces, 2's represent player 2's pieces
 	private int rows; //The number of rows on the board
@@ -24,7 +24,7 @@ public class Board {
 	public final static int MOVE_TYPE_PUT = 1;
 	public final static int MOVE_TYPE_POP = 0;
 	
-	public Board(){
+	public Board2(){
 		
 	}
 	

@@ -1,8 +1,4 @@
-/*
- * 
- * NOTE: THIS ASSUMES OLDBOARD IS STILL CALLED BOARD
- * 
- * import java.util.ArrayList;
+import java.util.ArrayList;
 
 public class GameTree {
 	//Variables
@@ -91,7 +87,6 @@ public class GameTree {
 		int boardCounter = 0;
 		if (currentDepth < maxDepth)
 		{
-			int boardGroupIndex = 0;
 			for (ArrayList<Board> boardGroup : fullTree.get(currentDepth))	//Iterate through tree row at current depth
 			{
 				for (Board board : boardGroup)
@@ -101,23 +96,7 @@ public class GameTree {
 					board.getParentMove().setValue(heuristicValue); //TODO test if this work properly with memory referencing
 					boardCounter++;
 				}
-				Board boardToReturn = boardGroup.get(0);
-				for (Board currBoard : boardGroup){
-					if(currBoard.getTurn() == currBoard.P2){
-						if(currBoard.getEvaluationValue() > boardToReturn.getEvaluationValue()){
-							boardToReturn = currBoard;
-						}
-					}
-					else{
-						if (currBoard.getEvaluationValue() < boardToReturn.getEvaluationValue()){
-							boardToReturn = currBoard;
-						}
-					}
-				}
-				
-				boardGroupIndex++;
 			}
-			//Return the min or max
 		} else {
 			//TODO check for possible alpha beta pruning
 			ArrayList<Board> currBoardGroup = fullTree.get(currentDepth).get(index);
@@ -147,4 +126,3 @@ public class GameTree {
 		return -999999;
 	}
 }
-*/
