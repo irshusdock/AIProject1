@@ -9,9 +9,7 @@ public class Board {
 	private int cols; //The number of cols on the board
 	private boolean player1popused; //Boolean for if player 1 has used their pop
 	private boolean player2popused; //Boolean for if player 2 has used their pop
-	private int turn; //Whos turn it is. 1 represents player 1's turn, 2 represents player 2's turn. It represents the player to make the next move
-	//In regards to turn: If player1 is going first, the empty board's turn is P1. It represents that P1 can make the next move
-	
+	private int turn; //Whos turn it is. 1 represents player 1's turn, 2 represents player 2's turn
 	private int n; //The number of pieces in a row to win
 	private int evaluationValue; //The evaluation value of the current board state
 	private ArrayList<Board> nextPossibleBoards; //All the possible boards that can come from this board 
@@ -108,7 +106,6 @@ public class Board {
 				Board nextBoard = new Board();
 				nextBoard.setBoardState(this.boardState);
 				nextBoard.setTurn(this.turn);
-				nextBoard.setN(this.n);
 				
 				Move nextMove = new Move(MOVE_TYPE_PUT, i);
 				nextBoard.setMove(nextMove);
@@ -137,7 +134,6 @@ public class Board {
 				Board nextBoard = new Board();
 				nextBoard.setBoardState(this.boardState);
 				nextBoard.setTurn(this.turn);
-				nextBoard.setN(this.n);
 				
 				Move nextMove = new Move(MOVE_TYPE_POP, i);
 				nextBoard.setMove(nextMove);
@@ -178,27 +174,15 @@ public class Board {
 			for(int i = rows-1; i > 0; i--){
 				this.boardState[i][moveColumn] = this.boardState[i-1][moveColumn];
 			}
-			
-			//If player1 used the pop
-			if(turn == P1){
-				this.player1popused = true;
-			}
-			//If player2 used the pop
-			else{
-				this.player2popused = true;
-			}
 		}
 		
-		//If player1 moved, set the next move to player2
+		//update the turn
 		if(turn == P1){
 			turn = P2;
 		}
-		//If player2 moved, set the next pove to player1
 		else{
 			turn = P1;
 		}
-		
-		this.setMove(move);
 	}
 	
 	//Set the board state of this board to the passed board state
@@ -220,10 +204,4 @@ public class Board {
 	public int getEvaluationValue(){
 		return evaluationValue;
 	}
-
-	//Set the value of n-in-a-row
-	public void setN(int n){
-		this.n = n;
-	}
 }
-
