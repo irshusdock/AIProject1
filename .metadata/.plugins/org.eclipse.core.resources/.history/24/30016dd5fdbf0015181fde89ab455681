@@ -30,7 +30,6 @@ public class Board {
 	
 	//Evaluate the state of a board. currentDepth is the depth of the board (where the current game state is
 	//at depth 0) and maxDepth is the depth to evaluate to.
-	//NOTE: This function currently generates the subsequent moves
 	public int evaluateToDepth(int currentDepth, int maxDepth){
 		
 		//Base Case: currentDepth = maxDepth
@@ -46,7 +45,7 @@ public class Board {
 		//Then determine the best child based on whose turn it is
 		//Then return the value of the best child board
 		
-		this.generatePossibleBoards(); //TODO: MAYBE CHANGE WHERE THIS OCCURS
+		this.generatePossibleBoards();
 
 		//Evaluate each child board. Pass currentDepth+1 because the children are 1 move deeper
 		for(Board childBoard: this.nextPossibleBoards){
