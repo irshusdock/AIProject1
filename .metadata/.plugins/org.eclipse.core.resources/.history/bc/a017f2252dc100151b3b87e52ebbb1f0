@@ -26,11 +26,8 @@ public class Board {
 	public final static int MOVE_TYPE_PUT = 1;
 	public final static int MOVE_TYPE_POP = 0;
 	
-	public Board(int rows, int cols, int n){
-		this.rows = rows;
-		this.cols = cols;
-		this.n = n;
-		this.boardState = new int[rows][cols];
+	public Board(){
+		
 	}
 	
 	//Evaluate the state of a board. currentDepth is the depth of the board (where the current game state is
@@ -136,9 +133,10 @@ public class Board {
 			
 			//Make all valid Put moves
 			if(openRowIndex != -1){
-				Board nextBoard = new Board(this.rows, this.cols, this.n);
+				Board nextBoard = new Board();
 				nextBoard.setBoardState(this.boardState);
 				nextBoard.setTurn(this.turn);
+				nextBoard.setN(this.n);
 				
 				Move nextMove = new Move(MOVE_TYPE_PUT, i);
 				nextBoard.setMove(nextMove);
@@ -164,9 +162,10 @@ public class Board {
 			
 			//If the bottom chip is this players chip, generate a pop move
 			if(boardState[rows-1][i] == turn){
-				Board nextBoard = new Board(this.rows, this.cols, this.n);
+				Board nextBoard = new Board();
 				nextBoard.setBoardState(this.boardState);
 				nextBoard.setTurn(this.turn);
+				nextBoard.setN(this.n);
 				
 				Move nextMove = new Move(MOVE_TYPE_POP, i);
 				nextBoard.setMove(nextMove);
@@ -248,6 +247,11 @@ public class Board {
 	//Get the evaluation value of the board
 	public int getEvaluationValue(){
 		return evaluationValue;
+	}
+
+	//Set the value of n-in-a-row
+	public void setN(int n){
+		this.n = n;
 	}
 }
 

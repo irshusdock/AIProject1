@@ -1,0 +1,27 @@
+import java.util.Scanner;
+import java.util.StringTokenizer;
+
+public class Controller {
+	
+	private static final String PLAYER_NAME = "Godzilla";
+
+	public static void main(String[] args) {
+		//Call controller loop
+		playGame();
+	}
+	
+	public static void playGame(){
+		Scanner scan = new Scanner(System.in);
+		
+		//Output our player name
+		System.out.println(PLAYER_NAME);
+		
+		String playerAssignments = scan.next();
+		
+		StringTokenizer tokenizer = new StringTokenizer(playerAssignments);
+		while(tokenizer.hasMoreTokens()){
+			System.out.println(tokenizer.nextElement());
+		}
+	}
+
+}
