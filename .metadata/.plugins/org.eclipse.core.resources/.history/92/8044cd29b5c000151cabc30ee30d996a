@@ -32,9 +32,8 @@ public class Board {
 	
 	//Evaluate the state of a board. currentDepth is the depth of the board (where the current game state is
 	//at depth 0) and maxDepth is the depth to evaluate to.
-	//alpha is the max value seen, beta is the min value seen
 	//NOTE: This function currently generates the subsequent moves
-	public int evaluateToDepth(int currentDepth, int maxDepth, int alpha, int beta){
+	public int evaluateToDepth(int currentDepth, int maxDepth){
 		
 		//Base Case: currentDepth = maxDepth
 		//Run the evaluation function and return the result
@@ -53,37 +52,10 @@ public class Board {
 
 		//Evaluate each child board. Pass currentDepth+1 because the children are 1 move deeper
 		for(Board childBoard: this.nextPossibleBoards){
-			int currentValue = childBoard.evaluateToDepth(currentDepth+1, maxDepth, alpha, beta);
-			
-			//If we are maximizing
-			if(turn == P1){
-				if(currentValue > alpha){
-					alpha = currentValue;
-				}
-				if(alpha > beta){
-					return alpha;
-				}
-			}
-			
-			//If we are minimizing
-			if(turn == P2){
-				if(currentValue < beta){
-					beta = currentValue;
-				}
-				if(alpha > beta){
-					return beta;
-				}
-			}
+			childBoard.evaluateToDepth(currentDepth+1, maxDepth);
 		}
 		
-		if(turn == P1){
-			return alpha;
-		}
-		else{
-			return beta;
-		}
-		
-		/*//Player 1 will maximize the board values
+		//Player 1 will maximize the board values
 		if(turn == P1){
 			int maxEvaluationValue = nextPossibleBoards.get(0).getEvaluationValue();
 			
@@ -108,7 +80,7 @@ public class Board {
 				
 			}
 			return minEvaluationValue;
-		}*/
+		}
 		
 		
 	}
