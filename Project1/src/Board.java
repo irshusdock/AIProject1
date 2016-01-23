@@ -97,11 +97,13 @@ public class Board {
 		//TODO: INSERT EVALUATION FUNCTION LOGIC HERE
 		int functionResult = 0;
 		
+		//TODO There very well may be an issue with chains not being put in the right spot in the array, spot + 1
+		
 		//Not sure you can safely create and set arrays this way
-		int [] numberOfHConnections = new int[n+1];
-		int [] numberOfVConnections = new int[n+1];
-		int [] numberOfDLConnections = new int[n+1];
-		int []numberOfDRConnections = new int[n+1];
+		int [] numberOfHConnections = new int[n+2];
+		int [] numberOfVConnections = new int[n+2];
+		int [] numberOfDLConnections = new int[n+2];
+		int []numberOfDRConnections = new int[n+2];
 		
 		numberOfHConnections = findHorizontalConnections(boardState, numberOfHConnections, P1);
 		numberOfVConnections = findVerticalConnections(boardState, numberOfVConnections, P1);
@@ -236,9 +238,8 @@ public class Board {
 						if (boardState[i][j-1] == 0)
 							openSpots++;
 					}
-					lengthCounter++;
 					//Iterate through all connecting pieces in a row
-					if (j != cols)
+					if (j < cols-1)
 					{
 						while (boardState[i][j+1] == player)
 						{
@@ -249,7 +250,7 @@ public class Board {
 						}
 					}
 					//If there is a space to the right, then increment the number of open spots
-					if (j < cols)
+					if (j < cols-1)
 					{
 						if (boardState[i][j+1] == 0)
 							openSpots++;
@@ -278,7 +279,6 @@ public class Board {
 			{
 				if (boardState[currRow][currCol] == player)
 				{
-					System.err.println("Found player piece at boardState["+currRow+"]["+currCol+"]");
 					//If there is space above, increment number of openSpots
 					if (currRow > 0)				//Bounds check
 					{
@@ -287,22 +287,23 @@ public class Board {
 							openSpots++;
 						}
 					}
-					lengthCounter++;
 					//Iterate through all connecting pieces in a row
 					if (currRow != rows)			//Bounds check
 					{
-						System.err.println("Iterating at boardState["+currRow+"]["+currCol+"]");
 						while (boardState[currRow][currCol] == player)
 						{
 							currRow++;
 							lengthCounter++;
-							if (currRow == cols)	//Break if hit end
+							if (currRow == rows)	//Break if hit end
+							{
 								break;
+							}
 						}
 					}
 					//Add the number of open spots to the corresponding place in currentFound
 					//Using the number of openSpots to represent the value of a connected column
 					//Blocked off columns are ignored
+					//System.err.println("Adding to openspots. LengthCounter:"+lengthCounter);
 					currentFound[lengthCounter]+=openSpots;
 					lengthCounter = 0;
 					openSpots = 0;
@@ -337,15 +338,13 @@ public class Board {
 						//Update chart of where we've looked
 						recordedChart[currRow][currCol] = CHECKED;
 						//See if we have room such that we even need to check for an opening to the bot right
-						if ((currCol<cols)&&(currRow<rows))
+						if ((currCol<cols-1)&&(currRow<rows-1))
 						{
 							if (boardState[currRow+1][currCol+1] == EMPTY)
 							{
 								openSpots++;
 							}
 						}
-						//Add starting length of 1 piece
-						lengthCounter++;
 						//Iterate along diagonal
 						if ((currRow>0)&&(currCol>0))//Check that iterating won't create an out of bounds error
 						{
@@ -362,7 +361,7 @@ public class Board {
 								colIterator++;
 								lengthCounter++;
 								//If we hit either bound, stop checking
-								if ((currRow == 0) || (currCol == 0))
+								if ((rowIterator == 0) || (colIterator == 0))
 								{
 									break;
 								}
@@ -400,17 +399,15 @@ public class Board {
 						//Update chart of where we've looked
 						recordedChart[currRow][currCol] = CHECKED;
 						//See if we have room such that we even need to check for an opening to the bot left
-						if ((currCol > 0)&&(currRow < rows))
+						if ((currCol > 0)&&(currRow < rows-1))
 						{
 							if (boardState[currRow+1][currCol-1] == EMPTY)
 							{
 								openSpots++;
 							}
 						}
-						//Add starting length of 1 piece
-						lengthCounter++;
 						//Iterate along diagonal
-						if ((currRow>0)&&(currCol < cols))//Check that iterating won't create an out of bounds error
+						if ((currRow>0)&&(currCol < cols -1 ))//Check that iterating won't create an out of bounds error
 						{
 							//Use iterators because we cannot skip parts of the loop
 							rowIterator = currRow;
@@ -425,7 +422,7 @@ public class Board {
 								colIterator++;
 								lengthCounter++;
 								//If we hit either bound, stop checking
-								if ((currRow == rows) || (currCol == 0))
+								if ((rowIterator == rows) || (colIterator == 0))
 								{
 									break;
 								}
@@ -433,13 +430,13 @@ public class Board {
 							rowIterator = 0;
 							colIterator = 0;
 						}
-						//Check if we have room for an open spot to the upper left
-						if ((currRow<rows)&&(currCol>0))
+						//Check if we have room for an open spot to the upper right
+						if ((currRow>0)&&(currCol<cols-1))
 						{
 							if (boardState[currRow-1][currCol+1] == EMPTY)
 							{
 								openSpots++;
-								recordedChart[currRow-1][currCol-1] = CHECKED;
+								recordedChart[currRow-1][currCol+1] = CHECKED;
 							}
 						}
 						//Add found diagonal to list and reset tracking variables
