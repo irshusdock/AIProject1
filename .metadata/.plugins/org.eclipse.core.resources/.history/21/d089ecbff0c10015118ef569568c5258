@@ -249,15 +249,5 @@ public class Board {
 	public int getEvaluationValue(){
 		return evaluationValue;
 	}
-
-	//Get the next possible boards
-	public ArrayList<Board> getNextPossibleBoards() {
-		return nextPossibleBoards;
-	}
-	
-	//Get the move to get this board
-	public Move getMoveToGetThisBoard(){
-		return moveToGetThisBoard;
-	}
 }
 
