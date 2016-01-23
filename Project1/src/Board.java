@@ -13,7 +13,7 @@ public class Board {
 	//In regards to turn: If player1 is going first, the empty board's turn is P1. It represents that P1 can make the next move
 	
 	private int n; //The number of pieces in a row to win
-	private int evaluationValue; //The evaluation value of the current board state
+	private double evaluationValue; //The evaluation value of the current board state
 	private ArrayList<Board> nextPossibleBoards; //All the possible boards that can come from this board 
 	private Move moveToGetThisBoard; //The move that was done to get this board
 
@@ -28,6 +28,11 @@ public class Board {
 	public final static int MOVE_TYPE_POP = 0;
 	public final static int DIAG_LEFT = 1;
 	public final static int DIAG_RIGHT = 2;
+	//Heuristic constants
+	public final static double HORIZONTAL_MODIFIER = 0.7;
+	public final static double VERTICAL_MODIFIER = 0.9;
+	public final static double DIAGONAL_MODIFIER = 1.4;
+	public final static double SIZE_MODIFIER = 0.5;
 	
 	public Board(int rows, int cols, int n){
 		this.rows = rows;
@@ -47,7 +52,8 @@ public class Board {
 		//Run the evaluation function and return the result
 		if(currentDepth == maxDepth){
 			this.evaluate();
-			return this.getEvaluationValue();
+			//TODO This should be a double, but it would require some refactoring
+			return (int)this.getEvaluationValue();
 		}
 		
 		//Not Base Case: currentDepth < maxDepth
@@ -96,23 +102,39 @@ public class Board {
 	//Evaluation/Heuristic function. Sets the evaluationValue to the numeric value of this function
 	public void evaluate(){
 		//TODO: INSERT EVALUATION FUNCTION LOGIC HERE
-		int functionResult = 0;
-		
+		double functionResult = 0;
+		int arraySize = n+2;
 		//TODO There very well may be an issue with chains not being put in the right spot in the array, spot + 1
 		
 		//Not sure you can safely create and set arrays this way
-		int [] numberOfHConnections = new int[n+2];
-		int [] numberOfVConnections = new int[n+2];
-		int [] numberOfDLConnections = new int[n+2];
-		int []numberOfDRConnections = new int[n+2];
+		int [] numberOfHConnections = new int[arraySize];
+		int [] numberOfVConnections = new int[arraySize];
+		int [] numberOfDLConnections = new int[arraySize];
+		int []numberOfDRConnections = new int[arraySize];
 		
 		numberOfHConnections = findHorizontalConnections(boardState, numberOfHConnections, P1);
 		numberOfVConnections = findVerticalConnections(boardState, numberOfVConnections, P1);
 		numberOfDLConnections = findDiagonalConnections(boardState, numberOfDLConnections, DIAG_LEFT, P1);
 		numberOfDRConnections = findDiagonalConnections(boardState, numberOfDRConnections, DIAG_RIGHT, P1);
 		
-		/*
-		System.err.println("-----------Evaluation results:----------");
+		for (int i = 0; i < arraySize; i++)
+		{
+			functionResult += ((numberOfHConnections[i] * HORIZONTAL_MODIFIER) * (i * SIZE_MODIFIER));
+		}
+		for (int i = 0; i < arraySize; i++)
+		{
+			functionResult += ((numberOfVConnections[i] * VERTICAL_MODIFIER) * (i * SIZE_MODIFIER));
+		}
+		for (int i = 0; i < arraySize; i++)
+		{
+			functionResult += ((numberOfDLConnections[i] * DIAGONAL_MODIFIER) * (i * SIZE_MODIFIER));
+		}
+		for (int i = 0; i < arraySize; i++)
+		{
+			functionResult += ((numberOfDRConnections[i] * DIAGONAL_MODIFIER) * (i * SIZE_MODIFIER));
+		}
+		
+		/*System.err.println("-----------Evaluation results:----------");
 		System.err.print("HConn:  ");
 		for (int i = 0; i < n+2; i++)
 		{
@@ -136,9 +158,8 @@ public class Board {
 		{
 			System.err.print(i+"-chains: "+numberOfDRConnections[i]+" | ");
 		}
-		System.err.println("");
+		System.err.println("");*/
 		
-		*/
 		evaluationValue = functionResult;
 	}
 	
@@ -397,18 +418,18 @@ public class Board {
 									break;
 								}
 							}
-							rowIterator = 0;
-							colIterator = 0;
 						}
 						//Check if we have room for an open spot to the upper left
-						if ((currRow>0)&&(currCol>0))
+						if ((rowIterator>0)&&(colIterator>0))
 						{
-							if (boardState[currRow-1][currCol-1] == EMPTY)
+							if (boardState[rowIterator-1][colIterator-1] == EMPTY)
 							{
 								openSpots++;
-								recordedChart[currRow-1][currCol-1] = CHECKED;
+								recordedChart[rowIterator-1][colIterator-1] = CHECKED;
 							}
 						}
+						rowIterator = 0;
+						colIterator = 0;
 						//Add found diagonal to list and reset tracking variables
 						currentFound[lengthCounter]+=openSpots;
 						lengthCounter = 0;
@@ -459,18 +480,18 @@ public class Board {
 									break;
 								}
 							}
-							rowIterator = 0;
-							colIterator = 0;
 						}
 						//Check if we have room for an open spot to the upper right
-						if ((currRow>0)&&(currCol<cols-1))
+						if ((rowIterator>0)&&(colIterator<cols-1))
 						{
-							if (boardState[currRow-1][currCol+1] == EMPTY)
+							if (boardState[rowIterator-1][colIterator+1] == EMPTY)
 							{
 								openSpots++;
-								recordedChart[currRow-1][currCol+1] = CHECKED;
+								recordedChart[rowIterator-1][colIterator+1] = CHECKED;
 							}
 						}
+						rowIterator = 0;
+						colIterator = 0;
 						//Add found diagonal to list and reset tracking variables
 						currentFound[lengthCounter]+=openSpots;
 						lengthCounter = 0;
@@ -502,7 +523,7 @@ public class Board {
 	}
 	
 	//Get the evaluation value of the board
-	public int getEvaluationValue(){
+	public double getEvaluationValue(){
 		return evaluationValue;
 	}
 
