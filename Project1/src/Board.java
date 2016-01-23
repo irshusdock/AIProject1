@@ -303,6 +303,7 @@ public class Board {
 			{
 				if (boardState[currRow][currCol] == player)
 				{
+					System.err.println("Found player piece at boardState["+currRow+"]["+currCol+"]");
 					//If there is space above, increment number of openSpots
 					if (currRow > 0)				//Bounds check
 					{
@@ -315,6 +316,7 @@ public class Board {
 					//Iterate through all connecting pieces in a row
 					if (currRow != rows)			//Bounds check
 					{
+						System.err.println("Iterating at boardState["+currRow+"]["+currCol+"]");
 						while (boardState[currRow][currCol] == player)
 						{
 							currRow++;
@@ -350,7 +352,7 @@ public class Board {
 		if (type == DIAG_LEFT)		//Choose a type of diagonal to look for
 		{
 			//Iterate horizontally through board, starting at bottom row
-			for (int currRow = rows; currRow > 0; currRow--)
+			for (int currRow = rows-1; currRow >= 0; currRow--)
 			{
 				for (int currCol = 0; currCol < cols; currCol++)
 				{					
@@ -413,7 +415,7 @@ public class Board {
 		else			//Begin logic for diagonal of type DIAG_RIGHT
 		{
 			//Iterate horizontally through board, starting at bottom row
-			for (int currRow = rows; currRow > 0; currRow--)
+			for (int currRow = (rows-1); currRow >= 0; currRow--)
 			{
 				for (int currCol = 0; currCol < cols; currCol++)
 				{					
