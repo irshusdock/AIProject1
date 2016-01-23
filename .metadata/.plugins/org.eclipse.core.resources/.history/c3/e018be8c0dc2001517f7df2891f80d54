@@ -110,35 +110,6 @@ public class Board {
 		numberOfVConnections = findVerticalConnections(boardState, numberOfVConnections, P1);
 		numberOfDLConnections = findDiagonalConnections(boardState, numberOfDLConnections, DIAG_LEFT, P1);
 		numberOfDRConnections = findDiagonalConnections(boardState, numberOfDRConnections, DIAG_RIGHT, P1);
-		
-		/*
-		System.err.println("-----------Evaluation results:----------");
-		System.err.print("HConn:  ");
-		for (int i = 0; i < n+2; i++)
-		{
-			System.err.print(i+"-chains: "+numberOfHConnections[i]+" | ");
-		}
-		System.err.println("");
-		System.err.print("VConn:  ");
-		for (int i = 0; i < n+2; i++)
-		{
-			System.err.print(i+"-chains: "+numberOfVConnections[i]+" | ");
-		}
-		System.err.println("");
-		System.err.print("DLConn: ");
-		for (int i = 0; i < n+2; i++)
-		{
-			System.err.print(i+"-chains: "+numberOfDLConnections[i]+" | ");
-		}
-		System.err.println("");
-		System.err.print("DRConn: ");
-		for (int i = 0; i < n+2; i++)
-		{
-			System.err.print(i+"-chains: "+numberOfDRConnections[i]+" | ");
-		}
-		System.err.println("");
-		
-		*/
 		evaluationValue = functionResult;
 	}
 	
@@ -271,7 +242,7 @@ public class Board {
 					//Iterate through all connecting pieces in a row
 					if (j < cols-1)
 					{
-						while (boardState[i][j] == player)
+						while (boardState[i][j+1] == player)
 						{
 							j++;
 							lengthCounter++;
@@ -375,7 +346,6 @@ public class Board {
 								openSpots++;
 							}
 						}
-						lengthCounter++;
 						//Iterate along diagonal
 						if ((currRow>0)&&(currCol>0))//Check that iterating won't create an out of bounds error
 						{
@@ -388,8 +358,8 @@ public class Board {
 								//Update visited areas
 								recordedChart[rowIterator-1][colIterator-1] = CHECKED;
 								//Increment iterators
-								rowIterator--;
-								colIterator--;
+								rowIterator++;
+								colIterator++;
 								lengthCounter++;
 								//If we hit either bound, stop checking
 								if ((rowIterator == 0) || (colIterator == 0))
@@ -437,7 +407,6 @@ public class Board {
 								openSpots++;
 							}
 						}
-						lengthCounter++;
 						//Iterate along diagonal
 						if ((currRow>0)&&(currCol < cols -1 ))//Check that iterating won't create an out of bounds error
 						{
@@ -450,11 +419,11 @@ public class Board {
 								//Update visited areas
 								recordedChart[rowIterator-1][colIterator+1] = CHECKED;
 								//Increment iterators
-								rowIterator--;
+								rowIterator++;
 								colIterator++;
 								lengthCounter++;
 								//If we hit either bound, stop checking
-								if ((rowIterator == 0) || (colIterator == cols-1))
+								if ((rowIterator == rows) || (colIterator == 0))
 								{
 									break;
 								}
@@ -484,11 +453,7 @@ public class Board {
 	
 	//Set the board state of this board to the passed board state
 	public void setBoardState(int[][] boardState){
-		for(int i = 0; i < this.rows; i++){
-			for(int j = 0; j < this.cols; j++){
-				this.boardState[i][j] = boardState[i][j];
-			}
-		}
+		this.boardState = boardState;
 	}
 	
 	//Set the turn of this board to the passed turn
@@ -514,24 +479,6 @@ public class Board {
 	//Get the move to get this board
 	public Move getMoveToGetThisBoard(){
 		return moveToGetThisBoard;
-	}
-
-	public void setPlace(int row, int col, int val)
-	{
-		this.boardState[row][col] = val;
-	}
-	
-	public void print()
-	{
-		for (int i = 0; i < rows; i++)
-		{
-			for (int j = 0; j< cols; j++)
-			{
-				System.err.print(this.boardState[i][j]);
-			}
-			System.err.println();
-		}
-		System.err.println("");
 	}
 	
 	//Get the Boardstate

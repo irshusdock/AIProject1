@@ -19,7 +19,6 @@ public class Controller {
 	public static void main(String[] args) {
 		// Call controller loop
 		playGame();
-		//testEval();
 	}
 
 	public static Board instantiateGame() {
@@ -85,12 +84,12 @@ public class Controller {
 				Move opponentsMove = new Move(moveType, column);
 
 				board.makeMove(opponentsMove);
-				/*for(int i = 0; i < 6; i++){
+				for(int i = 0; i < 6; i++){
 					for (int j = 0; j < 7; j++){
 						System.err.print(board.getBoardState()[i][j] + " ");
 					}
 					System.err.println();
-				}*/
+				}
 			}
 
 			// When it is our turn, evaluate the best option and print out the
@@ -108,34 +107,19 @@ public class Controller {
 					}
 				}
 				maxDepthCounter++;
-				System.err.println();
-				/*for(int i = 0; i < 6; i++){
-					for (int j = 0; j < 7; j++){
-						System.err.print(board.getBoardState()[i][j] + " ");
-					}
-					System.err.println();
-				}*/
 			}
 
 			board.makeMove(moveToMake);
-			
+			for(int i = 0; i < 6; i++){
+				for (int j = 0; j < 7; j++){
+					System.err.print(board.getBoardState()[i][j] + " ");
+				}
+				System.err.println();
+			}
 			System.out.println(moveToMake.getCol() + " " + moveToMake.getType());
 			isOurTurn = false;
 
 		}
 
-	}
-
-	public static void testEval()
-	{
-		Board testBoard = new Board(6, 7, 4);
-		testBoard.setPlace(5, 0, 1);
-		testBoard.setPlace(4, 0, 1);
-		testBoard.setPlace(5, 1, 1);
-		testBoard.setPlace(5, 2, 1);
-		testBoard.setPlace(5, 3, 1);
-		testBoard.setPlace(4, 2, 1);
-		testBoard.print();
-		testBoard.evaluate();
 	}
 }
