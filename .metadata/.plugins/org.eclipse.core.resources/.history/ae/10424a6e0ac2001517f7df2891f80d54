@@ -34,7 +34,6 @@ public class Board {
 		this.cols = cols;
 		this.n = n;
 		this.boardState = new int[rows][cols];
-		this.nextPossibleBoards = new ArrayList<Board>();
 	}
 	
 	//Evaluate the state of a board. currentDepth is the depth of the board (where the current game state is
@@ -119,7 +118,7 @@ public class Board {
 		//Need to set move, change board state, change turn
 		int openRowIndex;
 		
-		this.nextPossibleBoards.clear();
+		this.nextPossibleBoards = new ArrayList<Board>();
 		
 		for(int i = 0; i < this.cols; i++){
 			//Determine the open row value for each column
@@ -178,6 +177,7 @@ public class Board {
 			}
 			maxOpenRow = i;
 		}
+		System.err.println("Returning value of :"+maxOpenRow);
 		return maxOpenRow;
 	}
 	
@@ -453,11 +453,7 @@ public class Board {
 	
 	//Set the board state of this board to the passed board state
 	public void setBoardState(int[][] boardState){
-		for(int i = 0; i < this.rows; i++){
-			for(int j = 0; j < this.cols; j++){
-				this.boardState[i][j] = boardState[i][j];
-			}
-		}
+		this.boardState = boardState;
 	}
 	
 	//Set the turn of this board to the passed turn
@@ -483,11 +479,6 @@ public class Board {
 	//Get the move to get this board
 	public Move getMoveToGetThisBoard(){
 		return moveToGetThisBoard;
-	}
-	
-	//Get the Boardstate
-	public int[][] getBoardState(){
-		return this.boardState;
 	}
 }
 

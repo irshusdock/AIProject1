@@ -84,12 +84,12 @@ public class Controller {
 				Move opponentsMove = new Move(moveType, column);
 
 				board.makeMove(opponentsMove);
-				/*for(int i = 0; i < 6; i++){
+				for(int i = 0; i < 6; i++){
 					for (int j = 0; j < 7; j++){
 						System.err.print(board.getBoardState()[i][j] + " ");
 					}
 					System.err.println();
-				}*/
+				}
 			}
 
 			// When it is our turn, evaluate the best option and print out the
@@ -107,13 +107,12 @@ public class Controller {
 					}
 				}
 				maxDepthCounter++;
-				System.err.println();
-				/*for(int i = 0; i < 6; i++){
+				for(int i = 0; i < 6; i++){
 					for (int j = 0; j < 7; j++){
 						System.err.print(board.getBoardState()[i][j] + " ");
 					}
 					System.err.println();
-				}*/
+				}
 			}
 
 			board.makeMove(moveToMake);
