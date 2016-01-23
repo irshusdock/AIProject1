@@ -18,6 +18,7 @@ public class Board {
 	private Move moveToGetThisBoard; //The move that was done to get this board
 
 	//Constants
+	public final static int EMPTY = 0;
 	public final static int P1 = 1;
 	public final static int P2 = 2;
 	public final static int BOARD_STATE_EMPTY = 0;
@@ -25,6 +26,8 @@ public class Board {
 	public final static int BOARD_STATE_PLAYER2 = 2;
 	public final static int MOVE_TYPE_PUT = 1;
 	public final static int MOVE_TYPE_POP = 0;
+	public final static int DIAG_LEFT = 1;
+	public final static int DIAG_RIGHT = 2;
 	
 	public Board(int rows, int cols, int n){
 		this.rows = rows;
@@ -121,10 +124,16 @@ public class Board {
 		//TODO: INSERT EVALUATION FUNCTION LOGIC HERE
 		int functionResult = 0;
 		
-		int[] numberOfConnections = new int[n+1];
-		numberOfConnections = findHorizontalConnections(boardState, numberOfConnections, 1);
-		numberOfConnections = findVerticalConnections(boardState, numberOfConnections, 1);
-		numberOfConnections = findDiagonalConnections(boardState, numberOfConnections, 1);
+		//Not sure you can safely create and set arrays this way
+		int [] numberOfHConnections = new int[n+1];
+		int [] numberOfVConnections = new int[n+1];
+		int [] numberOfDLConnections = new int[n+1];
+		int []numberOfDRConnections = new int[n+1];
+		
+		numberOfHConnections = findHorizontalConnections(boardState, numberOfHConnections, P1);
+		numberOfVConnections = findVerticalConnections(boardState, numberOfVConnections, P1);
+		numberOfDLConnections = findDiagonalConnections(boardState, numberOfDLConnections, DIAG_LEFT, P1);
+		numberOfDRConnections = findDiagonalConnections(boardState, numberOfDRConnections, DIAG_RIGHT, P1);
 		evaluationValue = functionResult;
 	}
 	
@@ -254,10 +263,15 @@ public class Board {
 					}
 					lengthCounter++;
 					//Iterate through all connecting pieces in a row
-					while (boardState[i][j+1] == player)
+					if (j != cols)
 					{
-						j++;
-						lengthCounter++;
+						while (boardState[i][j+1] == player)
+						{
+							j++;
+							lengthCounter++;
+							if (j == cols)
+								break;
+						}
 					}
 					//If there is a space to the right, then increment the number of open spots
 					if (j < cols)
@@ -270,21 +284,198 @@ public class Board {
 					//A row with 2 open spots counts as 2 rows
 					currentFound[lengthCounter]+=openSpots;
 					lengthCounter = 0;
+					openSpots = 0;
 				}
 			}
 		}
 		return currentFound;
 	}
 
-	public int[] findVerticalConnections(int[][] boardState, int[]oldNumConnections)
+	public int[] findVerticalConnections(int[][] boardState, int[]oldNumConnections, int player)
 	{
-		return new int[0];
+		int lengthCounter = 0;
+		int openSpots = 0;
+		int[] currentFound = oldNumConnections;
+		
+		for (int currCol = 0; currCol < cols; currCol++)
+		{
+			for (int currRow = 0; currRow < rows; currRow++)
+			{
+				if (boardState[currRow][currCol] == player)
+				{
+					//If there is space above, increment number of openSpots
+					if (currRow > 0)				//Bounds check
+					{
+						if (boardState[currRow-1][currCol] == 0)
+						{
+							openSpots++;
+						}
+					}
+					lengthCounter++;
+					//Iterate through all connecting pieces in a row
+					if (currRow != rows)			//Bounds check
+					{
+						while (boardState[currRow][currCol] == player)
+						{
+							currRow++;
+							lengthCounter++;
+							if (currRow == cols)	//Break if hit end
+								break;
+						}
+					}
+					//Add the number of open spots to the corresponding place in currentFound
+					//Using the number of openSpots to represent the value of a connected column
+					//Blocked off columns are ignored
+					currentFound[lengthCounter]+=openSpots;
+					lengthCounter = 0;
+					openSpots = 0;
+				}
+			}
+		}
+		return currentFound;
 	}
 	
-	public int[] findDiagonalConnections(int[][] boardState, int[]oldNumConnections)
+	public int[] findDiagonalConnections(int[][] boardState, int[]oldNumConnections, int type, int player)
 	{
-		return new int[0];
+		int [][]recordedChart = new int [rows][cols];		//Chart to see which places have been visited already. 0 represents unchecked. 1 means checked
+		int rowIterator = 0;
+		int colIterator = 0;
+		int lengthCounter = 0;
+		int openSpots = 0;
+		int[] currentFound = oldNumConnections;
+		
+		final int UNCHECKED = 0;
+		final int CHECKED = 1;
+		
+		if (type == DIAG_LEFT)		//Choose a type of diagonal to look for
+		{
+			//Iterate horizontally through board, starting at bottom row
+			for (int currRow = rows; currRow > 0; currRow--)
+			{
+				for (int currCol = 0; currCol < cols; currCol++)
+				{					
+					//If we find a player piece we haven't yet examined
+					if ((boardState[currRow][currCol] == player ) && (recordedChart[currRow][currCol] == UNCHECKED))
+					{
+						//Update chart of where we've looked
+						recordedChart[currRow][currCol] = CHECKED;
+						//See if we have room such that we even need to check for an opening to the bot right
+						if ((currCol<cols)&&(currRow<rows))
+						{
+							if (boardState[currRow+1][currCol+1] == EMPTY)
+							{
+								openSpots++;
+							}
+						}
+						//Add starting length of 1 piece
+						lengthCounter++;
+						//Iterate along diagonal
+						if ((currRow>0)&&(currCol>0))//Check that iterating won't create an out of bounds error
+						{
+							//Use iterators because we cannot skip parts of the loop
+							rowIterator = currRow;
+							colIterator = currCol;
+							//This checks up one and to the left
+							while ((boardState[rowIterator-1][colIterator-1] == player) && (recordedChart[rowIterator-1][colIterator-1] == UNCHECKED))
+							{
+								//Update visited areas
+								recordedChart[rowIterator-1][colIterator-1] = CHECKED;
+								//Increment iterators
+								rowIterator++;
+								colIterator++;
+								lengthCounter++;
+								//If we hit either bound, stop checking
+								if ((currRow == 0) || (currCol == 0))
+								{
+									break;
+								}
+							}
+							rowIterator = 0;
+							colIterator = 0;
+						}
+						//Check if we have room for an open spot to the upper left
+						if ((currRow>0)&&(currCol>0))
+						{
+							if (boardState[currRow-1][currCol-1] == EMPTY)
+							{
+								openSpots++;
+								recordedChart[currRow-1][currCol-1] = CHECKED;
+							}
+						}
+						//Add found diagonal to list and reset tracking variables
+						currentFound[lengthCounter]+=openSpots;
+						lengthCounter = 0;
+						openSpots = 0;
+					}	//End first check for player piece
+				}		//End board column iterator
+			}			//End board row iterator
+		}				//End diagonal type check
+		else			//Begin logic for diagonal of type DIAG_RIGHT
+		{
+			//Iterate horizontally through board, starting at bottom row
+			for (int currRow = rows; currRow > 0; currRow--)
+			{
+				for (int currCol = 0; currCol < cols; currCol++)
+				{					
+					//If we find a player piece we haven't yet examined
+					if ((boardState[currRow][currCol] == player ) && (recordedChart[currRow][currCol] == UNCHECKED))
+					{
+						//Update chart of where we've looked
+						recordedChart[currRow][currCol] = CHECKED;
+						//See if we have room such that we even need to check for an opening to the bot left
+						if ((currCol > 0)&&(currRow < rows))
+						{
+							if (boardState[currRow+1][currCol-1] == EMPTY)
+							{
+								openSpots++;
+							}
+						}
+						//Add starting length of 1 piece
+						lengthCounter++;
+						//Iterate along diagonal
+						if ((currRow>0)&&(currCol < cols))//Check that iterating won't create an out of bounds error
+						{
+							//Use iterators because we cannot skip parts of the loop
+							rowIterator = currRow;
+							colIterator = currCol;
+							//This checks up one and to the left
+							while ((boardState[rowIterator-1][colIterator+1] == player) && (recordedChart[rowIterator-1][colIterator+1] == UNCHECKED))
+							{
+								//Update visited areas
+								recordedChart[rowIterator-1][colIterator+1] = CHECKED;
+								//Increment iterators
+								rowIterator++;
+								colIterator++;
+								lengthCounter++;
+								//If we hit either bound, stop checking
+								if ((currRow == rows) || (currCol == 0))
+								{
+									break;
+								}
+							}
+							rowIterator = 0;
+							colIterator = 0;
+						}
+						//Check if we have room for an open spot to the upper left
+						if ((currRow<rows)&&(currCol>0))
+						{
+							if (boardState[currRow-1][currCol+1] == EMPTY)
+							{
+								openSpots++;
+								recordedChart[currRow-1][currCol-1] = CHECKED;
+							}
+						}
+						//Add found diagonal to list and reset tracking variables
+						currentFound[lengthCounter]+=openSpots;
+						lengthCounter = 0;
+						openSpots = 0;
+					}	//End first check for player piece
+				}		//End board column iterator
+			}			//End board row iterator
+		}				//End diagonal type check
+		return currentFound;
 	}
+	
 	//Set the board state of this board to the passed board state
 	public void setBoardState(int[][] boardState){
 		this.boardState = boardState;
