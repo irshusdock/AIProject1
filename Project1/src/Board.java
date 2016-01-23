@@ -177,6 +177,7 @@ public class Board {
 			}
 			maxOpenRow = i;
 		}
+		System.err.println("Returning value of :"+maxOpenRow);
 		return maxOpenRow;
 	}
 	
