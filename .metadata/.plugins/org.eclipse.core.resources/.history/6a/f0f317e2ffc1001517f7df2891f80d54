@@ -83,13 +83,40 @@ public class Board {
 		}
 		
 		if(turn == P1){
-			this.evaluationValue = alpha;
 			return alpha;
 		}
 		else{
-			this.evaluationValue = beta;
 			return beta;
-		}	
+		}
+		
+		/*//Player 1 will maximize the board values
+		if(turn == P1){
+			int maxEvaluationValue = nextPossibleBoards.get(0).getEvaluationValue();
+			
+			for(Board childBoard: this.nextPossibleBoards){
+				
+				if(childBoard.getEvaluationValue() > maxEvaluationValue){
+					maxEvaluationValue = childBoard.getEvaluationValue();
+				}
+				
+			}
+			return maxEvaluationValue;
+		}
+		//Player 2 will minimize the board values
+		else{
+			int minEvaluationValue = nextPossibleBoards.get(0).getEvaluationValue();
+			
+			for(Board childBoard: this.nextPossibleBoards){
+				
+				if(childBoard.getEvaluationValue() < minEvaluationValue){
+					minEvaluationValue = childBoard.getEvaluationValue();
+				}
+				
+			}
+			return minEvaluationValue;
+		}*/
+		
+		
 	}
 	
 	//Evaluation/Heuristic function. Sets the evaluationValue to the numeric value of this function

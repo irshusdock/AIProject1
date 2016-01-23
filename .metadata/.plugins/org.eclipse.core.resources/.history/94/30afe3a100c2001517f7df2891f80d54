@@ -83,11 +83,9 @@ public class Board {
 		}
 		
 		if(turn == P1){
-			this.evaluationValue = alpha;
 			return alpha;
 		}
 		else{
-			this.evaluationValue = beta;
 			return beta;
 		}	
 	}
