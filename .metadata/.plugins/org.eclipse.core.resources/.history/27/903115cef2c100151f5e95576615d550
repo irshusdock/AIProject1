@@ -53,6 +53,7 @@ public class Controller {
 		Board initialBoard = new Board(rows, cols, n);
 		initialBoard.setTurn(1); // Always assume the player going first is
 									// trying to max
+		scan.close();
 		return initialBoard;
 	}
 
@@ -73,6 +74,7 @@ public class Controller {
 
 				if (nextResponse.equals(WIN_STRING) || nextResponse.equals(LOSE_STRING)
 						|| nextResponse.equals(DRAW_STRING)) {
+					scan.close();
 					return;
 				}
 

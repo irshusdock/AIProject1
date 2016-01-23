@@ -9,6 +9,19 @@
 		<item value="1" key="updateSimilarElementsMatchStrategy"/>
 		<item value="false" key="updateTextualMatches"/>
 	</section>
+	<section name="FatJarPackageWizard">
+		<item value="C:\Users\Ian.Ian-PC\Desktop\School\Junior 2015-2016\AI\Project1" key="FatJarPackageWizardPage.ANTSCRIPT_LOCATION"/>
+		<item value="Controller - Project1" key="FatJarPackageWizardPage.LAUNCH_CONFIGURATION_SELECTION_NAME"/>
+		<item value="C:\Users\Ian.Ian-PC\Desktop\AiRunFolder\Godzilla.jar" key="FatJarPackageWizardPage.DESTINATION_PATH_SELECTION"/>
+		<item value="false" key="FatJarPackageWizardPage.ANTSCRIPT_SAVE"/>
+		<item value="1" key="FatJarPackageWizardPage.LIBRARY_HANDLING"/>
+		<list key="FatJarPackageWizardPage.DESTINATION_NAMES_ID">
+			<item value="C:\Users\Ian.Ian-PC\Desktop\AiRunFolder\Godzilla.jar"/>
+		</list>
+		<list key="FatJarPackageWizardPage.ANTSCRIPT_LOCATION_HISTORY">
+			<item value=".xml"/>
+		</list>
+	</section>
 	<section name="org.eclipse.jdt.internal.ui.packageview.PackageExplorerPart">
 		<item value="2" key="layout"/>
 		<item value="true" key="group_libraries"/>
