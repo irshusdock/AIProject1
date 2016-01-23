@@ -18,7 +18,8 @@ public class Controller {
 
 	public static void main(String[] args) {
 		// Call controller loop
-		playGame();
+		//playGame();
+		testEval();
 	}
 
 	public static Board instantiateGame() {
@@ -109,5 +110,18 @@ public class Controller {
 
 		}
 
+	}
+
+	public static void testEval()
+	{
+		Board testBoard = new Board(6, 7, 4);
+		testBoard.setPlace(5, 0, 1);
+		testBoard.setPlace(4, 0, 1);
+		testBoard.setPlace(5, 1, 1);
+		testBoard.setPlace(5, 2, 1);
+		testBoard.setPlace(5, 3, 1);
+		testBoard.setPlace(4, 2, 1);
+		testBoard.print();
+		testBoard.evaluate();
 	}
 }

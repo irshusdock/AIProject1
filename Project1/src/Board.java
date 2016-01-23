@@ -109,6 +109,34 @@ public class Board {
 		numberOfVConnections = findVerticalConnections(boardState, numberOfVConnections, P1);
 		numberOfDLConnections = findDiagonalConnections(boardState, numberOfDLConnections, DIAG_LEFT, P1);
 		numberOfDRConnections = findDiagonalConnections(boardState, numberOfDRConnections, DIAG_RIGHT, P1);
+		
+		System.err.println("-----------Evaluation results:----------");
+		System.err.print("HConn:  ");
+		for (int i = 0; i < n+2; i++)
+		{
+			System.err.print(i+"-chains: "+numberOfHConnections[i]+" | ");
+		}
+		System.err.println("");
+		System.err.print("VConn:  ");
+		for (int i = 0; i < n+2; i++)
+		{
+			System.err.print(i+"-chains: "+numberOfVConnections[i]+" | ");
+		}
+		System.err.println("");
+		System.err.print("DLConn: ");
+		for (int i = 0; i < n+2; i++)
+		{
+			System.err.print(i+"-chains: "+numberOfDLConnections[i]+" | ");
+		}
+		System.err.println("");
+		System.err.print("DRConn: ");
+		for (int i = 0; i < n+2; i++)
+		{
+			System.err.print(i+"-chains: "+numberOfDRConnections[i]+" | ");
+		}
+		System.err.println("");
+		
+		
 		evaluationValue = functionResult;
 	}
 	
@@ -177,7 +205,6 @@ public class Board {
 			}
 			maxOpenRow = i;
 		}
-		System.err.println("Returning value of :"+maxOpenRow);
 		return maxOpenRow;
 	}
 	
@@ -242,7 +269,7 @@ public class Board {
 					//Iterate through all connecting pieces in a row
 					if (j < cols-1)
 					{
-						while (boardState[i][j+1] == player)
+						while (boardState[i][j] == player)
 						{
 							j++;
 							lengthCounter++;
@@ -346,6 +373,7 @@ public class Board {
 								openSpots++;
 							}
 						}
+						lengthCounter++;
 						//Iterate along diagonal
 						if ((currRow>0)&&(currCol>0))//Check that iterating won't create an out of bounds error
 						{
@@ -407,6 +435,7 @@ public class Board {
 								openSpots++;
 							}
 						}
+						lengthCounter++;
 						//Iterate along diagonal
 						if ((currRow>0)&&(currCol < cols -1 ))//Check that iterating won't create an out of bounds error
 						{
@@ -479,6 +508,24 @@ public class Board {
 	//Get the move to get this board
 	public Move getMoveToGetThisBoard(){
 		return moveToGetThisBoard;
+	}
+
+	public void setPlace(int row, int col, int val)
+	{
+		this.boardState[row][col] = val;
+	}
+	
+	public void print()
+	{
+		for (int i = 0; i < rows; i++)
+		{
+			for (int j = 0; j< cols; j++)
+			{
+				System.err.print(this.boardState[i][j]);
+			}
+			System.err.println();
+		}
+		System.err.println("");
 	}
 }
 
