@@ -121,6 +121,10 @@ public class Board {
 		//TODO: INSERT EVALUATION FUNCTION LOGIC HERE
 		int functionResult = 0;
 		
+		int[] numberOfConnections = new int[n+1];
+		numberOfConnections = findHorizontalConnections(boardState, numberOfConnections, 1);
+		numberOfConnections = findVerticalConnections(boardState, numberOfConnections, 1);
+		numberOfConnections = findDiagonalConnections(boardState, numberOfConnections, 1);
 		evaluationValue = functionResult;
 	}
 	
@@ -230,6 +234,57 @@ public class Board {
 		this.setMove(move);
 	}
 	
+	//Finds all the horizontally connected combinations of player pieces
+	public int[] findHorizontalConnections(int[][] boardState, int[]oldNumConnections, int player)
+	{
+		int lengthCounter = 0;
+		int openSpots = 0;
+		int[] currentFound = oldNumConnections;
+		for (int i = 0; i<rows; i++)
+		{
+			for (int j = 0; j<cols; j++)
+			{
+				if (boardState[i][j] == player)
+				{
+					//If there is a space to the left, then increment the number of open spots
+					if (j > 0)
+					{
+						if (boardState[i][j-1] == 0)
+							openSpots++;
+					}
+					lengthCounter++;
+					//Iterate through all connecting pieces in a row
+					while (boardState[i][j+1] == player)
+					{
+						j++;
+						lengthCounter++;
+					}
+					//If there is a space to the right, then increment the number of open spots
+					if (j < cols)
+					{
+						if (boardState[i][j+1] == 0)
+							openSpots++;
+					}
+					//Add the number of open spots to the corresponding place in currentFound
+					//Using the number of openSpots to represent the value of a connected row
+					//A row with 2 open spots counts as 2 rows
+					currentFound[lengthCounter]+=openSpots;
+					lengthCounter = 0;
+				}
+			}
+		}
+		return currentFound;
+	}
+
+	public int[] findVerticalConnections(int[][] boardState, int[]oldNumConnections)
+	{
+		return new int[0];
+	}
+	
+	public int[] findDiagonalConnections(int[][] boardState, int[]oldNumConnections)
+	{
+		return new int[0];
+	}
 	//Set the board state of this board to the passed board state
 	public void setBoardState(int[][] boardState){
 		this.boardState = boardState;
