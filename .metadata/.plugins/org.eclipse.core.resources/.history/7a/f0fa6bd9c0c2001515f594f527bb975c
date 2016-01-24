@@ -99,7 +99,7 @@ public class Controller {
 
 			//When it is our turn, evaluate the best option and print out the move it is correlated with
 			int maxDepthCounter = 1;
-			Move moveToMake = new Move(1, 0);
+			Move moveToMake = new Move(0, 1);
 			double endTime = timeRecieved + (MILLI_TO_SECONDS * timeLimit);
 
 			
