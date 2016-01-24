@@ -107,7 +107,7 @@ public class Board {
 		evaluationValue = 0;
 		
 		
-		double functionResult = 0;
+		double functionResult = 0;/*
 		int arraySize = n+2;
 		//TODO There very well may be an issue with chains not being put in the right spot in the array, spot + 1
 		

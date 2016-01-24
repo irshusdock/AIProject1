@@ -102,11 +102,6 @@ public class Board {
 	//Evaluation/Heuristic function. Sets the evaluationValue to the numeric value of this function
 	public void evaluate(){
 		//TODO: INSERT EVALUATION FUNCTION LOGIC HERE
-		
-		
-		evaluationValue = 0;
-		
-		
 		double functionResult = 0;
 		int arraySize = n+2;
 		//TODO There very well may be an issue with chains not being put in the right spot in the array, spot + 1
@@ -166,6 +161,7 @@ public class Board {
 		System.err.println("");*/
 		
 		evaluationValue = functionResult;
+		evaluationValue = 0;
 	}
 	
 	//Generate all possible boards that can come from this board and assign their moves, turns, and board states, and if a pop was used

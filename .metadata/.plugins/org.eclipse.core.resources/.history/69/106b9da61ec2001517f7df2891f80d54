@@ -105,7 +105,7 @@ public class Board {
 		
 		
 		evaluationValue = 0;
-		
+		return;/*
 		
 		double functionResult = 0;
 		int arraySize = n+2;
@@ -165,7 +165,7 @@ public class Board {
 		}
 		System.err.println("");*/
 		
-		evaluationValue = functionResult;
+		//evaluationValue = functionResult;
 	}
 	
 	//Generate all possible boards that can come from this board and assign their moves, turns, and board states, and if a pop was used

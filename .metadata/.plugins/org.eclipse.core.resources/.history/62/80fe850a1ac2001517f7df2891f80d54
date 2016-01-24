@@ -102,11 +102,6 @@ public class Board {
 	//Evaluation/Heuristic function. Sets the evaluationValue to the numeric value of this function
 	public void evaluate(){
 		//TODO: INSERT EVALUATION FUNCTION LOGIC HERE
-		
-		
-		evaluationValue = 0;
-		
-		
 		double functionResult = 0;
 		int arraySize = n+2;
 		//TODO There very well may be an issue with chains not being put in the right spot in the array, spot + 1
@@ -174,8 +169,7 @@ public class Board {
 		//Need to set move, change board state, change turn
 		int openRowIndex;
 		
-		this.deleteChildBoards();
-		this.nextPossibleBoards = new ArrayList<Board>();
+		this.nextPossibleBoards.clear();
 		
 		for(int i = 0; i < this.cols; i++){
 			//Determine the open row value for each column
@@ -564,19 +558,6 @@ public class Board {
 	//Get the Boardstate
 	public int[][] getBoardState(){
 		return this.boardState;
-	}
-	
-	private void deleteChildBoards(){
-		if(this.nextPossibleBoards.isEmpty()){
-			nextPossibleBoards = null;
-			return;
-		}
-		
-		for(Board childBoard: this.nextPossibleBoards){
-			childBoard.deleteChildBoards();
-		}
-		
-		nextPossibleBoards = null;
 	}
 }
 

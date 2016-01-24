@@ -3,7 +3,7 @@ import java.util.StringTokenizer;
 
 public class Controller {
 
-	private static final String PLAYER_NAME = "Tester";
+	private static final String PLAYER_NAME = "Godzilla";
 	private static final String PLAYER_1 = "player1: ";
 	private static final String WIN_STRING = "win";
 	private static final String LOSE_STRING = "lose";
@@ -85,16 +85,20 @@ public class Controller {
 				Move opponentsMove = new Move(moveType, column);
 
 				board.makeMove(opponentsMove);
+				/*for(int i = 0; i < 6; i++){
+					for (int j = 0; j < 7; j++){
+						System.err.print(board.getBoardState()[i][j] + " ");
+					}
+					System.err.println();
+				}*/
 			}
 
 			// When it is our turn, evaluate the best option and print out the
 			// move it is correlated with
 			int maxDepthCounter = 1;
-			Move moveToMake = new Move(0, -1);
-			double endTime = timeRecieved + (MILLI_TO_SECONDS * timeLimit);
+			Move moveToMake = new Move(0, 0);
 
-			
-			while (endTime > System.currentTimeMillis() + (Math.pow(2, maxDepthCounter)*MILLI_TO_SECONDS)) {
+			while (timeRecieved + (MILLI_TO_SECONDS * timeLimit) > System.currentTimeMillis() + Math.pow(2.5,maxDepthCounter)*MILLI_TO_SECONDS) {
 				int bestMoveVal = board.evaluateToDepth(0, maxDepthCounter, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
 				for (Board childBoard : board.getNextPossibleBoards()) {
@@ -104,10 +108,14 @@ public class Controller {
 					}
 				}
 				maxDepthCounter++;
-				
+				/*for(int i = 0; i < 6; i++){
+					for (int j = 0; j < 7; j++){
+						System.err.print(board.getBoardState()[i][j] + " ");
+					}
+					System.err.println();
+				}*/
 			}
 
-			System.err.println("Makin the move");
 			board.makeMove(moveToMake);
 			
 			System.out.println(moveToMake.getCol() + " " + moveToMake.getType());

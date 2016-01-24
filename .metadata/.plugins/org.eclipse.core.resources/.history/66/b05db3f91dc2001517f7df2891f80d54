@@ -105,7 +105,7 @@ public class Board {
 		
 		
 		evaluationValue = 0;
-		
+		return;
 		
 		double functionResult = 0;
 		int arraySize = n+2;

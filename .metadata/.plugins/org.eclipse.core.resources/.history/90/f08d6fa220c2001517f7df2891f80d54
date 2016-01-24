@@ -120,7 +120,7 @@ public class Board {
 		numberOfHConnections = findHorizontalConnections(boardState, numberOfHConnections, P1);
 		numberOfVConnections = findVerticalConnections(boardState, numberOfVConnections, P1);
 		numberOfDLConnections = findDiagonalConnections(boardState, numberOfDLConnections, DIAG_LEFT, P1);
-		numberOfDRConnections = findDiagonalConnections(boardState, numberOfDRConnections, DIAG_RIGHT, P1);
+		numberOfDRConnections = findDiagonalConnections(boardState, numberOfDRConnections, DIAG_RIGHT, P1);/*
 		
 		for (int i = 0; i < arraySize; i++)
 		{

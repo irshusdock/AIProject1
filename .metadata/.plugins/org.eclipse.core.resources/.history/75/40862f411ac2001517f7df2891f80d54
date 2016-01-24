@@ -102,11 +102,6 @@ public class Board {
 	//Evaluation/Heuristic function. Sets the evaluationValue to the numeric value of this function
 	public void evaluate(){
 		//TODO: INSERT EVALUATION FUNCTION LOGIC HERE
-		
-		
-		evaluationValue = 0;
-		
-		
 		double functionResult = 0;
 		int arraySize = n+2;
 		//TODO There very well may be an issue with chains not being put in the right spot in the array, spot + 1
@@ -569,7 +564,6 @@ public class Board {
 	private void deleteChildBoards(){
 		if(this.nextPossibleBoards.isEmpty()){
 			nextPossibleBoards = null;
-			return;
 		}
 		
 		for(Board childBoard: this.nextPossibleBoards){
