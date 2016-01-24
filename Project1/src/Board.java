@@ -199,6 +199,67 @@ public class Board {
 		evaluationValue = functionResult;
 	}
 	
+	//Function to check whether or not we have hit a terminal state, and for which player
+	//Returns 0 for no terminal state, 1 for P1 win, 2 for P2 win, 3 for draw
+	public int checkTerminal()
+	{
+		int arraySize = n+2;
+		boolean P1win = false;
+		boolean P2win = false;
+		
+		int [] numberOfHConnectionsP1 = new int[arraySize];
+		int [] numberOfVConnectionsP1 = new int[arraySize];
+		int [] numberOfDLConnectionsP1 = new int[arraySize];
+		int []numberOfDRConnectionsP1 = new int[arraySize];
+		
+		int [] numberOfHConnectionsP2 = new int[arraySize];
+		int [] numberOfVConnectionsP2 = new int[arraySize];
+		int [] numberOfDLConnectionsP2 = new int[arraySize];
+		int []numberOfDRConnectionsP2 = new int[arraySize];
+		
+		//Find all chain connections for self
+		numberOfHConnectionsP1 = findHorizontalConnections(boardState, numberOfHConnectionsP1, P1);
+		numberOfVConnectionsP1 = findVerticalConnections(boardState, numberOfVConnectionsP1, P1);
+		numberOfDLConnectionsP1 = findDiagonalConnections(boardState, numberOfDLConnectionsP1, DIAG_LEFT, P1);
+		numberOfDRConnectionsP1 = findDiagonalConnections(boardState, numberOfDRConnectionsP1, DIAG_RIGHT, P1);
+		
+		//Find all chain connections for opponent
+		numberOfHConnectionsP2 = findHorizontalConnections(boardState, numberOfHConnectionsP2, P2);
+		numberOfVConnectionsP2 = findVerticalConnections(boardState, numberOfVConnectionsP2, P2);
+		numberOfDLConnectionsP2 = findDiagonalConnections(boardState, numberOfDLConnectionsP2, DIAG_LEFT, P2);
+		numberOfDRConnectionsP2 = findDiagonalConnections(boardState, numberOfDRConnectionsP2, DIAG_RIGHT, P2);
+		
+		//Check for wins or losses
+		//TODO make sure that the index should in fact be n
+		
+		if ((numberOfHConnectionsP2[n]>0) || (numberOfVConnectionsP2[n]>0) || (numberOfDLConnectionsP2[n]>0) || (numberOfDRConnectionsP2[n]>0))
+		{
+			P1win = true;
+		}
+		
+		if ((numberOfHConnectionsP1[n]>0) || (numberOfVConnectionsP1[n]>0) || (numberOfDLConnectionsP1[n]>0) || (numberOfDRConnectionsP1[n]>0))
+		{
+			P2win = true;
+		}
+		
+		if (P1win && P2win)
+		{
+			return 3;
+		}
+		else if (P2win)
+		{
+			return 2;
+		}
+		else if (P1win)
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	
 	//Generate all possible boards that can come from this board and assign their moves, turns, and board states, and if a pop was used
 	public void generatePossibleBoards(){
 		//Type 1: Put
