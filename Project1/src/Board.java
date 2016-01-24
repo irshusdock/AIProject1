@@ -137,12 +137,12 @@ public class Board {
 		//TODO make sure that the index should in fact be n
 		if ((numberOfHConnectionsP1[n]>0) || (numberOfVConnectionsP1[n]>0) || (numberOfDLConnectionsP1[n]>0) || (numberOfDRConnectionsP1[n]>0))
 		{
-			functionResult += Integer.MAX_VALUE;
+			functionResult += (Integer.MAX_VALUE/4);
 			evaluationValue = functionResult;
 		}
 		if ((numberOfHConnectionsP2[n]>0) || (numberOfVConnectionsP2[n]>0) || (numberOfDLConnectionsP2[n]>0) || (numberOfDRConnectionsP2[n]>0))
 		{
-			functionResult += Integer.MIN_VALUE;
+			functionResult += (Integer.MIN_VALUE/4);
 			evaluationValue = functionResult;
 		}
 		
