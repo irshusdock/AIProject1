@@ -37,7 +37,7 @@ public class Controller {
 		// Determine if we are player1 or player2
 		int ourAssignmentLength = PLAYER_1.length() + PLAYER_NAME.length();
 		for (int i = 0; i < (playerAssignments.length() - (ourAssignmentLength - 1)); i++) {
-			if (playerAssignments.substring(i, i + 17).equals(PLAYER_1 + PLAYER_NAME)) {
+			if (playerAssignments.substring(i, i + ourAssignmentLength).equals(PLAYER_1 + PLAYER_NAME)) {
 				isPlayer1 = true;
 				break;
 			}
