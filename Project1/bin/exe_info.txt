@@ -1,0 +1,1 @@
+To run the program: Type the command "java -jar irshusdock_arkessler.jar"

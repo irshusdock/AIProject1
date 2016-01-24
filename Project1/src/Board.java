@@ -61,10 +61,23 @@ public class Board {
 		//Run the evaluation function on each child
 		//Then determine the best child based on whose turn it is
 		//Then return the value of the best child board
-		
+		int terminalState = this.checkTerminal();
+		if(terminalState == 1){
+			evaluationValue = Integer.MAX_VALUE;
+			return Integer.MAX_VALUE;
+		}
+		if(terminalState == 2){
+			evaluationValue = Integer.MIN_VALUE;
+			return Integer.MIN_VALUE;
+		}
+		if(terminalState == 3){
+			evaluationValue = 0;
+			return 0;
+		}
 		this.generatePossibleBoards(); //TODO: MAYBE CHANGE WHERE THIS OCCURS
 		
 		//TODO CHECK IF WINNING FOR P1, if so return int max
+		
 		//TODO CHECK IF WINNING FOR P2, if so return int min
 
 		//Evaluate each child board. Pass currentDepth+1 because the children are 1 move deeper
@@ -234,12 +247,12 @@ public class Board {
 		
 		if ((numberOfHConnectionsP2[n]>0) || (numberOfVConnectionsP2[n]>0) || (numberOfDLConnectionsP2[n]>0) || (numberOfDRConnectionsP2[n]>0))
 		{
-			P1win = true;
+			P2win = true;
 		}
 		
 		if ((numberOfHConnectionsP1[n]>0) || (numberOfVConnectionsP1[n]>0) || (numberOfDLConnectionsP1[n]>0) || (numberOfDRConnectionsP1[n]>0))
 		{
-			P2win = true;
+			P1win = true;
 		}
 		
 		if (P1win && P2win)
@@ -538,7 +551,11 @@ public class Board {
 						rowIterator = 0;
 						colIterator = 0;
 						//Add found diagonal to list and reset tracking variables
-						currentFound[lengthCounter]+=openSpots;
+						if(lengthCounter > n){ //TODO: Verify this change works
+							currentFound[n+1]+=openSpots;
+						}else{
+							currentFound[lengthCounter]+=openSpots;
+						}
 						lengthCounter = 0;
 						openSpots = 0;
 					}	//End first check for player piece
