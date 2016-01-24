@@ -111,59 +111,78 @@ public class Board {
 		int arraySize = n+2;
 		//TODO There very well may be an issue with chains not being put in the right spot in the array, spot + 1
 		
-		//Not sure you can safely create and set arrays this way
-		int [] numberOfHConnections = new int[arraySize];
-		int [] numberOfVConnections = new int[arraySize];
-		int [] numberOfDLConnections = new int[arraySize];
-		int []numberOfDRConnections = new int[arraySize];
+		int [] numberOfHConnectionsP1 = new int[arraySize];
+		int [] numberOfVConnectionsP1 = new int[arraySize];
+		int [] numberOfDLConnectionsP1 = new int[arraySize];
+		int []numberOfDRConnectionsP1 = new int[arraySize];
 		
-		numberOfHConnections = findHorizontalConnections(boardState, numberOfHConnections, P1);
-		numberOfVConnections = findVerticalConnections(boardState, numberOfVConnections, P1);
-		numberOfDLConnections = findDiagonalConnections(boardState, numberOfDLConnections, DIAG_LEFT, P1);
-		numberOfDRConnections = findDiagonalConnections(boardState, numberOfDRConnections, DIAG_RIGHT, P1);
+		int [] numberOfHConnectionsP2 = new int[arraySize];
+		int [] numberOfVConnectionsP2 = new int[arraySize];
+		int [] numberOfDLConnectionsP2 = new int[arraySize];
+		int []numberOfDRConnectionsP2 = new int[arraySize];
 		
-		for (int i = 0; i < arraySize; i++)
+		//Find all chain connections for self
+		numberOfHConnectionsP1 = findHorizontalConnections(boardState, numberOfHConnectionsP1, P1);
+		numberOfVConnectionsP1 = findVerticalConnections(boardState, numberOfVConnectionsP1, P1);
+		numberOfDLConnectionsP1 = findDiagonalConnections(boardState, numberOfDLConnectionsP1, DIAG_LEFT, P1);
+		numberOfDRConnectionsP1 = findDiagonalConnections(boardState, numberOfDRConnectionsP1, DIAG_RIGHT, P1);
+		
+		//Find all chain connections for opponent
+		numberOfHConnectionsP2 = findHorizontalConnections(boardState, numberOfHConnectionsP2, P2);
+		numberOfVConnectionsP2 = findVerticalConnections(boardState, numberOfVConnectionsP2, P2);
+		numberOfDLConnectionsP2 = findDiagonalConnections(boardState, numberOfDLConnectionsP2, DIAG_LEFT, P2);
+		numberOfDRConnectionsP2 = findDiagonalConnections(boardState, numberOfDRConnectionsP2, DIAG_RIGHT, P2);
+		
+		//Check for wins or losses
+		//TODO make sure that the index should in fact be n
+		if ((numberOfHConnectionsP1[n]>0) || (numberOfVConnectionsP1[n]>0) || (numberOfDLConnectionsP1[n]>0) || (numberOfDRConnectionsP1[n]>0))
 		{
-			functionResult += ((numberOfHConnections[i] * HORIZONTAL_MODIFIER) * (i * SIZE_MODIFIER));
+			functionResult += Integer.MAX_VALUE;
+			evaluationValue = functionResult;
+			return;
 		}
-		for (int i = 0; i < arraySize; i++)
+		if ((numberOfHConnectionsP2[n]>0) || (numberOfVConnectionsP2[n]>0) || (numberOfDLConnectionsP2[n]>0) || (numberOfDRConnectionsP2[n]>0))
 		{
-			functionResult += ((numberOfVConnections[i] * VERTICAL_MODIFIER) * (i * SIZE_MODIFIER));
-		}
-		for (int i = 0; i < arraySize; i++)
-		{
-			functionResult += ((numberOfDLConnections[i] * DIAGONAL_MODIFIER) * (i * SIZE_MODIFIER));
-		}
-		for (int i = 0; i < arraySize; i++)
-		{
-			functionResult += ((numberOfDRConnections[i] * DIAGONAL_MODIFIER) * (i * SIZE_MODIFIER));
+			functionResult += Integer.MIN_VALUE;
+			evaluationValue = functionResult;
+			return;
 		}
 		
-		/*System.err.println("-----------Evaluation results:----------");
-		System.err.print("HConn:  ");
-		for (int i = 0; i < n+2; i++)
+		//Add all values for self chains
+		for (int i = 0; i < arraySize; i++)
 		{
-			System.err.print(i+"-chains: "+numberOfHConnections[i]+" | ");
+			functionResult += ((numberOfHConnectionsP1[i]) * (i * i));
 		}
-		System.err.println("");
-		System.err.print("VConn:  ");
-		for (int i = 0; i < n+2; i++)
+		for (int i = 0; i < arraySize; i++)
 		{
-			System.err.print(i+"-chains: "+numberOfVConnections[i]+" | ");
+			functionResult += ((numberOfVConnectionsP1[i]) * (i * i));
 		}
-		System.err.println("");
-		System.err.print("DLConn: ");
-		for (int i = 0; i < n+2; i++)
+		for (int i = 0; i < arraySize; i++)
 		{
-			System.err.print(i+"-chains: "+numberOfDLConnections[i]+" | ");
+			functionResult += ((numberOfDLConnectionsP1[i]) * (i * i));
 		}
-		System.err.println("");
-		System.err.print("DRConn: ");
-		for (int i = 0; i < n+2; i++)
+		for (int i = 0; i < arraySize; i++)
 		{
-			System.err.print(i+"-chains: "+numberOfDRConnections[i]+" | ");
+			functionResult += ((numberOfDRConnectionsP1[i]) * (i * i));
 		}
-		System.err.println("");*/
+		
+		//Subtract all value for opponent chains
+		for (int i = 0; i < arraySize; i++)
+		{
+			functionResult -= ((numberOfHConnectionsP2[i]) * (i * i));
+		}
+		for (int i = 0; i < arraySize; i++)
+		{
+			functionResult -= ((numberOfVConnectionsP2[i]) * (i * i));
+		}
+		for (int i = 0; i < arraySize; i++)
+		{
+			functionResult -= ((numberOfDLConnectionsP2[i]) * (i * i));
+		}
+		for (int i = 0; i < arraySize; i++)
+		{
+			functionResult -= ((numberOfDRConnectionsP2[i]) * (i * i));
+		}
 		
 		evaluationValue = functionResult;
 	}
