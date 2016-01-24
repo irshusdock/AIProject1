@@ -63,6 +63,9 @@ public class Board {
 		//Then return the value of the best child board
 		
 		this.generatePossibleBoards(); //TODO: MAYBE CHANGE WHERE THIS OCCURS
+		
+		//TODO CHECK IF WINNING FOR P1, if so return int max
+		//TODO CHECK IF WINNING FOR P2, if so return int min
 
 		//Evaluate each child board. Pass currentDepth+1 because the children are 1 move deeper
 		for(Board childBoard: this.nextPossibleBoards){
@@ -74,6 +77,8 @@ public class Board {
 					alpha = currentValue;
 				}
 				if(alpha > beta){
+					if(currentDepth != 0)
+						this.deleteChildBoards();
 					return alpha;
 				}
 			}
@@ -84,6 +89,8 @@ public class Board {
 					beta = currentValue;
 				}
 				if(alpha > beta){
+					if(currentDepth != 0)
+						this.deleteChildBoards();
 					return beta;
 				}
 			}
@@ -91,10 +98,14 @@ public class Board {
 		
 		if(turn == P1){
 			this.evaluationValue = alpha;
+			if(currentDepth != 0)
+				this.deleteChildBoards();
 			return alpha;
 		}
 		else{
 			this.evaluationValue = beta;
+			if(currentDepth != 0)
+				this.deleteChildBoards();
 			return beta;
 		}	
 	}
@@ -135,16 +146,19 @@ public class Board {
 		
 		//Check for wins or losses
 		//TODO make sure that the index should in fact be n
-		if ((numberOfHConnectionsP1[n]>0) || (numberOfVConnectionsP1[n]>0) || (numberOfDLConnectionsP1[n]>0) || (numberOfDRConnectionsP1[n]>0))
-		{
-			functionResult += (Integer.MAX_VALUE/4);
-			evaluationValue = functionResult;
-		}
+		
 		if ((numberOfHConnectionsP2[n]>0) || (numberOfVConnectionsP2[n]>0) || (numberOfDLConnectionsP2[n]>0) || (numberOfDRConnectionsP2[n]>0))
 		{
 			functionResult += (Integer.MIN_VALUE/4);
 			evaluationValue = functionResult;
 		}
+		
+		if ((numberOfHConnectionsP1[n]>0) || (numberOfVConnectionsP1[n]>0) || (numberOfDLConnectionsP1[n]>0) || (numberOfDRConnectionsP1[n]>0))
+		{
+			functionResult += (Integer.MAX_VALUE/4);
+			evaluationValue = functionResult;
+		}
+		
 		
 		//Add all values for self chains
 		for (int i = 0; i < arraySize; i++)
@@ -309,7 +323,7 @@ public class Board {
 					//If there is a space to the left, then increment the number of open spots
 					if (j > 0)
 					{
-						if (boardState[i][j-1] == 0)
+						if (boardState[i][j-1] == BOARD_STATE_EMPTY)
 							openSpots++;
 					}
 					//Iterate through all connecting pieces in a row
@@ -332,7 +346,11 @@ public class Board {
 					//Add the number of open spots to the corresponding place in currentFound
 					//Using the number of openSpots to represent the value of a connected row
 					//A row with 2 open spots counts as 2 rows
-					currentFound[lengthCounter]+=openSpots;
+					if(lengthCounter > n){ //TODO: Verify this change works
+						currentFound[n+1]+=openSpots;
+					}else{
+						currentFound[lengthCounter]+=openSpots;
+					}
 					lengthCounter = 0;
 					openSpots = 0;
 				}
@@ -378,7 +396,12 @@ public class Board {
 					//Using the number of openSpots to represent the value of a connected column
 					//Blocked off columns are ignored
 					//System.err.println("Adding to openspots. LengthCounter:"+lengthCounter);
-					currentFound[lengthCounter]+=openSpots;
+
+					if(lengthCounter > n){ //TODO: Verify this change works
+						currentFound[n+1]+=openSpots;
+					}else{
+						currentFound[lengthCounter]+=openSpots;
+					}
 					lengthCounter = 0;
 					openSpots = 0;
 				}
@@ -516,7 +539,12 @@ public class Board {
 						rowIterator = 0;
 						colIterator = 0;
 						//Add found diagonal to list and reset tracking variables
-						currentFound[lengthCounter]+=openSpots;
+
+						if(lengthCounter > n){ //TODO: Verify this change works
+							currentFound[n+1]+=openSpots;
+						}else{
+							currentFound[lengthCounter]+=openSpots;
+						}
 						lengthCounter = 0;
 						openSpots = 0;
 					}	//End first check for player piece
@@ -584,6 +612,9 @@ public class Board {
 	}
 	
 	private void deleteChildBoards(){
+		if(this.nextPossibleBoards == null){
+			return;
+		}
 		if(this.nextPossibleBoards.isEmpty()){
 			nextPossibleBoards = null;
 			return;

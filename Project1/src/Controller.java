@@ -3,7 +3,7 @@ import java.util.StringTokenizer;
 
 public class Controller {
 
-	private static final String PLAYER_NAME = "Tester";
+	private static final String PLAYER_NAME = "Godzilla";
 	private static final String PLAYER_1 = "player1: ";
 	private static final String WIN_STRING = "win";
 	private static final String LOSE_STRING = "lose";
@@ -90,12 +90,13 @@ public class Controller {
 			// When it is our turn, evaluate the best option and print out the
 			// move it is correlated with
 			int maxDepthCounter = 1;
-			Move moveToMake = new Move(0, -1);
+			Move moveToMake = new Move(0, 1);
 			double endTime = timeRecieved + (MILLI_TO_SECONDS * timeLimit);
 
 			
-			while (endTime > System.currentTimeMillis() + (Math.pow(2, maxDepthCounter)*MILLI_TO_SECONDS)) {
+			while (endTime > System.currentTimeMillis() + (Math.pow(1.3, maxDepthCounter)*MILLI_TO_SECONDS)) {
 				int bestMoveVal = board.evaluateToDepth(0, maxDepthCounter, Integer.MIN_VALUE, Integer.MAX_VALUE);
+				System.err.println("Depth is: " + maxDepthCounter);
 
 				for (Board childBoard : board.getNextPossibleBoards()) {
 					if (childBoard.getEvaluationValue() == bestMoveVal) {
@@ -104,10 +105,12 @@ public class Controller {
 					}
 				}
 				maxDepthCounter++;
+				if(maxDepthCounter == 8){
+					break;
+				}
 				
 			}
 
-			System.err.println("Makin the move");
 			board.makeMove(moveToMake);
 			
 			System.out.println(moveToMake.getCol() + " " + moveToMake.getType());
@@ -122,11 +125,13 @@ public class Controller {
 		Board testBoard = new Board(6, 7, 4);
 		testBoard.setPlace(5, 0, 1);
 		testBoard.setPlace(4, 0, 1);
-		testBoard.setPlace(5, 1, 1);
-		testBoard.setPlace(5, 2, 1);
-		testBoard.setPlace(5, 3, 1);
-		testBoard.setPlace(4, 2, 1);
+		testBoard.setPlace(3, 0, 1);
+		//testBoard.setPlace(5, 2, 1);
+		//testBoard.setPlace(5, 3, 1);
+		//testBoard.setPlace(4, 2, 1);
 		testBoard.print();
+		//testBoard.evaluateToDepth(0, 8, Integer.MIN_VALUE, Integer.MAX_VALUE);
 		testBoard.evaluate();
+		System.err.println(testBoard.getEvaluationValue());
 	}
 }

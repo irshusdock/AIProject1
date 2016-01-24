@@ -1,0 +1,627 @@
+//irshusdock & arkessler
+//Class for a board state. Includes the locations of pieces in the board, checks on if pops have been used, and whose turn it is
+
+import java.util.ArrayList;
+public class Board {
+	
+	private int[][] boardState; //The board. 0s represent empty spaces, 1's represent player 1's pieces, 2's represent player 2's pieces
+	private int rows; //The number of rows on the board
+	private int cols; //The number of cols on the board
+	private boolean player1popused; //Boolean for if player 1 has used their pop
+	private boolean player2popused; //Boolean for if player 2 has used their pop
+	private int turn; //Whos turn it is. 1 represents player 1's turn, 2 represents player 2's turn. It represents the player to make the next move
+	//In regards to turn: If player1 is going first, the empty board's turn is P1. It represents that P1 can make the next move
+	
+	private int n; //The number of pieces in a row to win
+	private double evaluationValue; //The evaluation value of the current board state
+	private ArrayList<Board> nextPossibleBoards; //All the possible boards that can come from this board 
+	private Move moveToGetThisBoard; //The move that was done to get this board
+
+	//Constants
+	public final static int EMPTY = 0;
+	public final static int P1 = 1;
+	public final static int P2 = 2;
+	public final static int BOARD_STATE_EMPTY = 0;
+	public final static int BOARD_STATE_PLAYER1 = 1;
+	public final static int BOARD_STATE_PLAYER2 = 2;
+	public final static int MOVE_TYPE_PUT = 1;
+	public final static int MOVE_TYPE_POP = 0;
+	public final static int DIAG_LEFT = 1;
+	public final static int DIAG_RIGHT = 2;
+	//Heuristic constants
+	public final static double HORIZONTAL_MODIFIER = 0.7;
+	public final static double VERTICAL_MODIFIER = 0.9;
+	public final static double DIAGONAL_MODIFIER = 1.4;
+	public final static double SIZE_MODIFIER = 0.5;
+	
+	public Board(int rows, int cols, int n){
+		this.rows = rows;
+		this.cols = cols;
+		this.n = n;
+		this.boardState = new int[rows][cols];
+		this.nextPossibleBoards = new ArrayList<Board>();
+	}
+	
+	//Evaluate the state of a board. currentDepth is the depth of the board (where the current game state is
+	//at depth 0) and maxDepth is the depth to evaluate to.
+	//alpha is the max value seen, beta is the min value seen
+	//NOTE: This function currently generates the subsequent moves
+	public int evaluateToDepth(int currentDepth, int maxDepth, int alpha, int beta){
+		
+		//Base Case: currentDepth = maxDepth
+		//Run the evaluation function and return the result
+		if(currentDepth == maxDepth){
+			this.evaluate();
+			//TODO This should be a double, but it would require some refactoring
+			return (int)this.getEvaluationValue();
+		}
+		
+		//Not Base Case: currentDepth < maxDepth
+		//Generate children
+		//Run the evaluation function on each child
+		//Then determine the best child based on whose turn it is
+		//Then return the value of the best child board
+		
+		this.generatePossibleBoards(); //TODO: MAYBE CHANGE WHERE THIS OCCURS
+
+		//Evaluate each child board. Pass currentDepth+1 because the children are 1 move deeper
+		for(Board childBoard: this.nextPossibleBoards){
+			int currentValue = childBoard.evaluateToDepth(currentDepth+1, maxDepth, alpha, beta);
+			
+			//If we are maximizing
+			if(turn == P1){
+				if(currentValue > alpha){
+					alpha = currentValue;
+				}
+				if(alpha > beta){
+					if(currentDepth != 0)
+						this.deleteChildBoards();
+					return alpha;
+				}
+			}
+			
+			//If we are minimizing
+			if(turn == P2){
+				if(currentValue < beta){
+					beta = currentValue;
+				}
+				if(alpha > beta){
+					if(currentDepth != 0)
+						this.deleteChildBoards();
+					return beta;
+				}
+			}
+		}
+		
+		if(turn == P1){
+			this.evaluationValue = alpha;
+			if(currentDepth != 0)
+				this.deleteChildBoards();
+			return alpha;
+		}
+		else{
+			this.evaluationValue = beta;
+			if(currentDepth != 0)
+				this.deleteChildBoards();
+			return beta;
+		}	
+	}
+	
+	//Evaluation/Heuristic function. Sets the evaluationValue to the numeric value of this function
+	public void evaluate(){
+		//TODO: INSERT EVALUATION FUNCTION LOGIC HERE
+		
+		
+		evaluationValue = 0;
+		
+		
+		double functionResult = 0;
+		int arraySize = n+2;
+		//TODO There very well may be an issue with chains not being put in the right spot in the array, spot + 1
+		
+		int [] numberOfHConnectionsP1 = new int[arraySize];
+		int [] numberOfVConnectionsP1 = new int[arraySize];
+		int [] numberOfDLConnectionsP1 = new int[arraySize];
+		int []numberOfDRConnectionsP1 = new int[arraySize];
+		
+		int [] numberOfHConnectionsP2 = new int[arraySize];
+		int [] numberOfVConnectionsP2 = new int[arraySize];
+		int [] numberOfDLConnectionsP2 = new int[arraySize];
+		int []numberOfDRConnectionsP2 = new int[arraySize];
+		
+		//Find all chain connections for self
+		numberOfHConnectionsP1 = findHorizontalConnections(boardState, numberOfHConnectionsP1, P1);
+		numberOfVConnectionsP1 = findVerticalConnections(boardState, numberOfVConnectionsP1, P1);
+		numberOfDLConnectionsP1 = findDiagonalConnections(boardState, numberOfDLConnectionsP1, DIAG_LEFT, P1);
+		numberOfDRConnectionsP1 = findDiagonalConnections(boardState, numberOfDRConnectionsP1, DIAG_RIGHT, P1);
+		
+		//Find all chain connections for opponent
+		numberOfHConnectionsP2 = findHorizontalConnections(boardState, numberOfHConnectionsP2, P2);
+		numberOfVConnectionsP2 = findVerticalConnections(boardState, numberOfVConnectionsP2, P2);
+		numberOfDLConnectionsP2 = findDiagonalConnections(boardState, numberOfDLConnectionsP2, DIAG_LEFT, P2);
+		numberOfDRConnectionsP2 = findDiagonalConnections(boardState, numberOfDRConnectionsP2, DIAG_RIGHT, P2);
+		
+		//Check for wins or losses
+		//TODO make sure that the index should in fact be n
+		
+		if ((numberOfHConnectionsP2[n]>0) || (numberOfVConnectionsP2[n]>0) || (numberOfDLConnectionsP2[n]>0) || (numberOfDRConnectionsP2[n]>0))
+		{
+			functionResult += (Integer.MIN_VALUE/5);
+			evaluationValue = functionResult;
+		}
+		
+		if ((numberOfHConnectionsP1[n]>0) || (numberOfVConnectionsP1[n]>0) || (numberOfDLConnectionsP1[n]>0) || (numberOfDRConnectionsP1[n]>0))
+		{
+			functionResult += (Integer.MAX_VALUE/4);
+			evaluationValue = functionResult;
+		}
+		
+		
+		//Add all values for self chains
+		for (int i = 0; i < arraySize; i++)
+		{
+			functionResult += ((numberOfHConnectionsP1[i]) * (i * i));
+		}
+		for (int i = 0; i < arraySize; i++)
+		{
+			functionResult += ((numberOfVConnectionsP1[i]) * (i * i));
+		}
+		for (int i = 0; i < arraySize; i++)
+		{
+			functionResult += ((numberOfDLConnectionsP1[i]) * (i * i));
+		}
+		for (int i = 0; i < arraySize; i++)
+		{
+			functionResult += ((numberOfDRConnectionsP1[i]) * (i * i));
+		}
+		
+		//Subtract all value for opponent chains
+		for (int i = 0; i < arraySize; i++)
+		{
+			functionResult -= ((numberOfHConnectionsP2[i]) * (i * i));
+		}
+		for (int i = 0; i < arraySize; i++)
+		{
+			functionResult -= ((numberOfVConnectionsP2[i]) * (i * i));
+		}
+		for (int i = 0; i < arraySize; i++)
+		{
+			functionResult -= ((numberOfDLConnectionsP2[i]) * (i * i));
+		}
+		for (int i = 0; i < arraySize; i++)
+		{
+			functionResult -= ((numberOfDRConnectionsP2[i]) * (i * i));
+		}
+		
+		evaluationValue = functionResult;
+	}
+	
+	//Generate all possible boards that can come from this board and assign their moves, turns, and board states, and if a pop was used
+	public void generatePossibleBoards(){
+		//Type 1: Put
+		//Need to set move, change board state, change turn
+		int openRowIndex;
+		
+		this.deleteChildBoards();
+		this.nextPossibleBoards = new ArrayList<Board>();
+		
+		for(int i = 0; i < this.cols; i++){
+			//Determine the open row value for each column
+			openRowIndex = this.getOpenRow(i);
+			
+			//Make all valid Put moves
+			if(openRowIndex != -1){
+				Board nextBoard = new Board(this.rows, this.cols, this.n);
+				nextBoard.setBoardState(this.boardState);
+				nextBoard.setTurn(this.turn);
+				
+				Move nextMove = new Move(MOVE_TYPE_PUT, i);
+				nextBoard.setMove(nextMove);
+				nextBoard.makeMove(nextMove);
+				this.nextPossibleBoards.add(nextBoard);
+			}
+		}
+		
+		//Type 2: Pop ONLY IF POP NOT USED
+		//Need to set move, change board state, change turn, set pop
+		
+		//If it's player1's turn and they have already used their pop, don't generate pop moves
+		if (this.player1popused && this.turn == P1){
+			return;
+		}
+		
+		//If it's player2's turn and they have already used their pop, don't generate pop moves
+		if (this.player2popused && this.turn == P2){
+			return;
+		}
+		
+		for(int i=0; i < this.cols; i++){
+			
+			//If the bottom chip is this players chip, generate a pop move
+			if(boardState[rows-1][i] == turn){
+				Board nextBoard = new Board(this.rows, this.cols, this.n);
+				nextBoard.setBoardState(this.boardState);
+				nextBoard.setTurn(this.turn);
+				
+				Move nextMove = new Move(MOVE_TYPE_POP, i);
+				nextBoard.setMove(nextMove);
+				nextBoard.makeMove(nextMove);
+				this.nextPossibleBoards.add(nextBoard);
+			}
+		}
+		
+	}
+
+	//Return the index of the first open row in the passed column (closet to the bottom of the board)
+	//Return -1 if the column is full
+	public int getOpenRow(int columnIndex){
+		int maxOpenRow = -1;
+		for(int i = 0; i < rows; i++){
+			if(boardState[i][columnIndex] != BOARD_STATE_EMPTY){
+				break;
+			}
+			maxOpenRow = i;
+		}
+		return maxOpenRow;
+	}
+	
+	//Update the board state of this board to reflect the execution of the passed move and update the turn
+	//Note: always assumes a legal move is made
+	public void makeMove(Move move){
+		int moveColumn = move.getCol();
+		int moveType = move.getType();
+
+		//If it is a put move
+		if(moveType == MOVE_TYPE_PUT){
+			int rowIndex = this.getOpenRow(moveColumn);
+			this.boardState[rowIndex][moveColumn] = turn;
+		}
+		//If it is a pop move
+		else{
+			//Remove the bottom piece and shift all others down by one
+			for(int i = rows-1; i > 0; i--){
+				this.boardState[i][moveColumn] = this.boardState[i-1][moveColumn];
+			}
+			
+			//If player1 used the pop
+			if(turn == P1){
+				this.player1popused = true;
+			}
+			//If player2 used the pop
+			else{
+				this.player2popused = true;
+			}
+		}
+		
+		//If player1 moved, set the next move to player2
+		if(turn == P1){
+			turn = P2;
+		}
+		//If player2 moved, set the next pove to player1
+		else{
+			turn = P1;
+		}
+		
+		this.setMove(move);
+	}
+	
+	//Finds all the horizontally connected combinations of player pieces
+	public int[] findHorizontalConnections(int[][] boardState, int[]oldNumConnections, int player)
+	{
+		int lengthCounter = 0;
+		int openSpots = 0;
+		int[] currentFound = oldNumConnections;
+		for (int i = 0; i<rows; i++)
+		{
+			for (int j = 0; j<cols; j++)
+			{
+				if (boardState[i][j] == player)
+				{
+					//If there is a space to the left, then increment the number of open spots
+					if (j > 0)
+					{
+						if (boardState[i][j-1] == BOARD_STATE_EMPTY)
+							openSpots++;
+					}
+					//Iterate through all connecting pieces in a row
+					if (j < cols-1)
+					{
+						while (boardState[i][j] == player)
+						{
+							j++;
+							lengthCounter++;
+							if (j == cols)
+								break;
+						}
+					}
+					//If there is a space to the right, then increment the number of open spots
+					if (j < cols-1)
+					{
+						if (boardState[i][j+1] == 0)
+							openSpots++;
+					}
+					//Add the number of open spots to the corresponding place in currentFound
+					//Using the number of openSpots to represent the value of a connected row
+					//A row with 2 open spots counts as 2 rows
+					if(lengthCounter > n){ //TODO: Verify this change works
+						currentFound[n+1]+=openSpots;
+					}else{
+						currentFound[lengthCounter]+=openSpots;
+					}
+					lengthCounter = 0;
+					openSpots = 0;
+				}
+			}
+		}
+		return currentFound;
+	}
+
+	public int[] findVerticalConnections(int[][] boardState, int[]oldNumConnections, int player)
+	{
+		int lengthCounter = 0;
+		int openSpots = 0;
+		int[] currentFound = oldNumConnections;
+		
+		for (int currCol = 0; currCol < cols; currCol++)
+		{
+			for (int currRow = 0; currRow < rows; currRow++)
+			{
+				if (boardState[currRow][currCol] == player)
+				{
+					//If there is space above, increment number of openSpots
+					if (currRow > 0)				//Bounds check
+					{
+						if (boardState[currRow-1][currCol] == 0)
+						{
+							openSpots++;
+						}
+					}
+					//Iterate through all connecting pieces in a row
+					if (currRow != rows)			//Bounds check
+					{
+						while (boardState[currRow][currCol] == player)
+						{
+							currRow++;
+							lengthCounter++;
+							if (currRow == rows)	//Break if hit end
+							{
+								break;
+							}
+						}
+					}
+					//Add the number of open spots to the corresponding place in currentFound
+					//Using the number of openSpots to represent the value of a connected column
+					//Blocked off columns are ignored
+					//System.err.println("Adding to openspots. LengthCounter:"+lengthCounter);
+
+					if(lengthCounter > n){ //TODO: Verify this change works
+						currentFound[n+1]+=openSpots;
+					}else{
+						currentFound[lengthCounter]+=openSpots;
+					}
+					lengthCounter = 0;
+					openSpots = 0;
+				}
+			}
+		}
+		return currentFound;
+	}
+	
+	public int[] findDiagonalConnections(int[][] boardState, int[]oldNumConnections, int type, int player)
+	{
+		int [][]recordedChart = new int [rows][cols];		//Chart to see which places have been visited already. 0 represents unchecked. 1 means checked
+		int rowIterator = 0;
+		int colIterator = 0;
+		int lengthCounter = 0;
+		int openSpots = 0;
+		int[] currentFound = oldNumConnections;
+		
+		final int UNCHECKED = 0;
+		final int CHECKED = 1;
+		
+		if (type == DIAG_LEFT)		//Choose a type of diagonal to look for
+		{
+			//Iterate horizontally through board, starting at bottom row
+			for (int currRow = rows-1; currRow >= 0; currRow--)
+			{
+				for (int currCol = 0; currCol < cols; currCol++)
+				{					
+					//If we find a player piece we haven't yet examined
+					if ((boardState[currRow][currCol] == player ) && (recordedChart[currRow][currCol] == UNCHECKED))
+					{
+						//Update chart of where we've looked
+						recordedChart[currRow][currCol] = CHECKED;
+						//See if we have room such that we even need to check for an opening to the bot right
+						if ((currCol<cols-1)&&(currRow<rows-1))
+						{
+							if (boardState[currRow+1][currCol+1] == EMPTY)
+							{
+								openSpots++;
+							}
+						}
+						lengthCounter++;
+						//Iterate along diagonal
+						if ((currRow>0)&&(currCol>0))//Check that iterating won't create an out of bounds error
+						{
+							//Use iterators because we cannot skip parts of the loop
+							rowIterator = currRow;
+							colIterator = currCol;
+							//This checks up one and to the left
+							while ((boardState[rowIterator-1][colIterator-1] == player) && (recordedChart[rowIterator-1][colIterator-1] == UNCHECKED))
+							{
+								//Update visited areas
+								recordedChart[rowIterator-1][colIterator-1] = CHECKED;
+								//Increment iterators
+								rowIterator--;
+								colIterator--;
+								lengthCounter++;
+								//If we hit either bound, stop checking
+								if ((rowIterator == 0) || (colIterator == 0))
+								{
+									break;
+								}
+							}
+						}
+						//Check if we have room for an open spot to the upper left
+						if ((rowIterator>0)&&(colIterator>0))
+						{
+							if (boardState[rowIterator-1][colIterator-1] == EMPTY)
+							{
+								openSpots++;
+								recordedChart[rowIterator-1][colIterator-1] = CHECKED;
+							}
+						}
+						rowIterator = 0;
+						colIterator = 0;
+						//Add found diagonal to list and reset tracking variables
+						currentFound[lengthCounter]+=openSpots;
+						lengthCounter = 0;
+						openSpots = 0;
+					}	//End first check for player piece
+				}		//End board column iterator
+			}			//End board row iterator
+		}				//End diagonal type check
+		else			//Begin logic for diagonal of type DIAG_RIGHT
+		{
+			//Iterate horizontally through board, starting at bottom row
+			for (int currRow = (rows-1); currRow >= 0; currRow--)
+			{
+				for (int currCol = 0; currCol < cols; currCol++)
+				{					
+					//If we find a player piece we haven't yet examined
+					if ((boardState[currRow][currCol] == player ) && (recordedChart[currRow][currCol] == UNCHECKED))
+					{
+						//Update chart of where we've looked
+						recordedChart[currRow][currCol] = CHECKED;
+						//See if we have room such that we even need to check for an opening to the bot left
+						if ((currCol > 0)&&(currRow < rows-1))
+						{
+							if (boardState[currRow+1][currCol-1] == EMPTY)
+							{
+								openSpots++;
+							}
+						}
+						lengthCounter++;
+						//Iterate along diagonal
+						if ((currRow>0)&&(currCol < cols -1 ))//Check that iterating won't create an out of bounds error
+						{
+							//Use iterators because we cannot skip parts of the loop
+							rowIterator = currRow;
+							colIterator = currCol;
+							//This checks up one and to the left
+							while ((boardState[rowIterator-1][colIterator+1] == player) && (recordedChart[rowIterator-1][colIterator+1] == UNCHECKED))
+							{
+								//Update visited areas
+								recordedChart[rowIterator-1][colIterator+1] = CHECKED;
+								//Increment iterators
+								rowIterator--;
+								colIterator++;
+								lengthCounter++;
+								//If we hit either bound, stop checking
+								if ((rowIterator == 0) || (colIterator == cols-1))
+								{
+									break;
+								}
+							}
+						}
+						//Check if we have room for an open spot to the upper right
+						if ((rowIterator>0)&&(colIterator<cols-1))
+						{
+							if (boardState[rowIterator-1][colIterator+1] == EMPTY)
+							{
+								openSpots++;
+								recordedChart[rowIterator-1][colIterator+1] = CHECKED;
+							}
+						}
+						rowIterator = 0;
+						colIterator = 0;
+						//Add found diagonal to list and reset tracking variables
+
+						if(lengthCounter > n){ //TODO: Verify this change works
+							currentFound[n+1]+=openSpots;
+						}else{
+							currentFound[lengthCounter]+=openSpots;
+						}
+						lengthCounter = 0;
+						openSpots = 0;
+					}	//End first check for player piece
+				}		//End board column iterator
+			}			//End board row iterator
+		}				//End diagonal type check
+		return currentFound;
+	}
+	
+	//Set the board state of this board to the passed board state
+	public void setBoardState(int[][] boardState){
+		for(int i = 0; i < this.rows; i++){
+			for(int j = 0; j < this.cols; j++){
+				this.boardState[i][j] = boardState[i][j];
+			}
+		}
+	}
+	
+	//Set the turn of this board to the passed turn
+	public void setTurn(int turn){
+		this.turn = turn;
+	}
+	
+	//Set the move of this board to the passed move
+	public void setMove(Move move){
+		this.moveToGetThisBoard = move;
+	}
+	
+	//Get the evaluation value of the board
+	public double getEvaluationValue(){
+		return evaluationValue;
+	}
+
+	//Get the next possible boards
+	public ArrayList<Board> getNextPossibleBoards() {
+		return nextPossibleBoards;
+	}
+	
+	//Get the move to get this board
+	public Move getMoveToGetThisBoard(){
+		return moveToGetThisBoard;
+	}
+
+	public void setPlace(int row, int col, int val)
+	{
+		this.boardState[row][col] = val;
+	}
+	
+	public void print()
+	{
+		for (int i = 0; i < rows; i++)
+		{
+			for (int j = 0; j< cols; j++)
+			{
+				System.err.print(this.boardState[i][j]);
+			}
+			System.err.println();
+		}
+		System.err.println("");
+	}
+	
+	//Get the Boardstate
+	public int[][] getBoardState(){
+		return this.boardState;
+	}
+	
+	private void deleteChildBoards(){
+		if(this.nextPossibleBoards == null){
+			return;
+		}
+		if(this.nextPossibleBoards.isEmpty()){
+			nextPossibleBoards = null;
+			return;
+		}
+		
+		for(Board childBoard: this.nextPossibleBoards){
+			childBoard.deleteChildBoards();
+		}
+		
+		nextPossibleBoards = null;
+	}
+}
+
