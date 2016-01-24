@@ -139,13 +139,11 @@ public class Board {
 		{
 			functionResult += Integer.MAX_VALUE;
 			evaluationValue = functionResult;
-			return;
 		}
 		if ((numberOfHConnectionsP2[n]>0) || (numberOfVConnectionsP2[n]>0) || (numberOfDLConnectionsP2[n]>0) || (numberOfDRConnectionsP2[n]>0))
 		{
 			functionResult += Integer.MIN_VALUE;
 			evaluationValue = functionResult;
-			return;
 		}
 		
 		//Add all values for self chains
