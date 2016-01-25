@@ -1,20 +1,31 @@
 //irshusdock & arkessler
 //Class that controls the core gameplay loop. Handles communication with the referee
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
 public class Controller {
 
-	private static final String PLAYER_NAME = "Tester";
+	//General string constants
+	private static final String PLAYER_NAME = "Default";
 	private static final String PLAYER_1 = "player1: ";
 	private static final String WIN_STRING = "win";
 	private static final String LOSE_STRING = "lose";
 	private static final String DRAW_STRING = "draw";
+	//General int constants
 	private static final int P1 = 1;
 	private static final int P2 = 2;
 	private static final long MILLI_TO_SECONDS = 1000;
+	//Logging constants/variables
+	private static boolean logging = true;
+	private static final String LOG_FILE = PLAYER_NAME+"_1.txt";
+		
+	//Variables
 	private static boolean isPlayer1;
 	private static int firstPlayer;
 	private static int timeLimit;
@@ -50,7 +61,15 @@ public class Controller {
 				break;
 			}
 		}
-
+		
+		if (logging)
+		{
+			if (isPlayer1)
+				writeToLog("Playing game as player1, named "+PLAYER_NAME+"\n");
+			else
+				writeToLog("Playing game as player2, named "+PLAYER_NAME+"\n");
+		}
+		
 		// Parse the initial parameters and set up the board accordingly
 		StringTokenizer tokenizer = new StringTokenizer(initialParameters);
 		int rows = Integer.parseInt(tokenizer.nextToken());
@@ -123,6 +142,9 @@ public class Controller {
 				
 			}
 
+			if (logging)
+				writeToLog(maxDepthCounter+"\n");
+			
 			//Update the board with the move we decided on
 			board.makeMove(moveToMake);
 			/*catch(Exception E){
@@ -159,5 +181,24 @@ public class Controller {
 		System.err.println(testBoard.evaluateToDepth(0, 6, Integer.MIN_VALUE, Integer.MAX_VALUE));
 		testBoard.evaluate();
 		System.err.println(testBoard.getEvaluationValue());
+	}
+	
+	public static void writeToLog(String lineToWrite)
+	{
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter(new FileWriter(LOG_FILE, true));
+			writer.println(lineToWrite);
+			writer.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
