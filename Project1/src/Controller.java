@@ -1,13 +1,20 @@
+
 //irshusdock & arkessler
 //Class that controls the core gameplay loop. Handles communication with the referee
-import java.io.FileNotFoundException;
-import java.io.PrintStream;
+
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
 public class Controller {
 
-	private static final String PLAYER_NAME = "Tester";
+	//Variables
+	private static boolean isPlayer1;
+	private static int firstPlayer;
+	private static int timeLimit;
+	private static long timeRecieved;
+	
+	//Constants
+	private static final String PLAYER_NAME = "Tester2";
 	private static final String PLAYER_1 = "player1: ";
 	private static final String WIN_STRING = "win";
 	private static final String LOSE_STRING = "lose";
@@ -15,28 +22,25 @@ public class Controller {
 	private static final int P1 = 1;
 	private static final int P2 = 2;
 	private static final long MILLI_TO_SECONDS = 1000;
-	private static boolean isPlayer1;
-	private static int firstPlayer;
-	private static int timeLimit;
-	private static long timeRecieved;
+	
 
-	//Main method. Calls the core gameplay loop
+	// Main method. Calls the core gameplay loop
 	public static void main(String[] args) {
 		// Call controller loop
 		playGame();
-		//testEval();
 	}
 
-	//Instantiates all necessary variables for the game and handles initial, 1 time communication messages with the referee
+	// Instantiates all necessary variables for the game and handles initial, 1
+	// time communication messages with the referee
 	public static Board instantiateGame() {
 		Scanner scan = new Scanner(System.in);
 
 		// Output our player name
 		System.out.println(PLAYER_NAME);
 
-		//Read in player assignments
+		// Read in player assignments
 		String playerAssignments = scan.nextLine();
-		//Read in the initial game parameters
+		// Read in the initial game parameters
 		String initialParameters = scan.nextLine();
 		timeRecieved = System.currentTimeMillis();
 
@@ -60,11 +64,14 @@ public class Controller {
 		timeLimit = Integer.parseInt(tokenizer.nextToken());
 
 		Board initialBoard = new Board(rows, cols, n);
-		initialBoard.setTurn(1); // Always assume the player going first is trying to max
+		initialBoard.setTurn(1); // Always assume the player going first is
+									// trying to max
+		scan.close();
 		return initialBoard;
 	}
 
-	//Method that handles main gameplay loop. It will continue to make moves and wait for its opponent until the game is terminated
+	// Method that handles main gameplay loop. It will continue to make moves
+	// and wait for its opponent until the game is terminated
 	public static void playGame() {
 		Board board = instantiateGame();
 		Scanner scan = new Scanner(System.in);
@@ -74,18 +81,20 @@ public class Controller {
 
 		while (true) {
 
-			// When it is our opponents turn, wait for their move, update the board with their move
+			// When it is our opponents turn, wait for their move, update the
+			// board with their move
 			if (!isOurTurn) {
-				//Read in our opponents move
+				// Read in our opponents move
 				String nextResponse = scan.nextLine();
 				timeRecieved = System.currentTimeMillis();
 
-				//Check if the game terminates
-				if (nextResponse.equals(WIN_STRING) || nextResponse.equals(LOSE_STRING) || nextResponse.equals(DRAW_STRING)) {
+				// Check if the game terminates
+				if (nextResponse.equals(WIN_STRING) || nextResponse.equals(LOSE_STRING)
+						|| nextResponse.equals(DRAW_STRING)) {
 					return;
 				}
 
-				//Interperet our opponents move
+				// Interpret our opponents move
 				StringTokenizer tokenizer = new StringTokenizer(nextResponse);
 
 				int column = Integer.parseInt(tokenizer.nextToken());
@@ -93,21 +102,23 @@ public class Controller {
 
 				Move opponentsMove = new Move(moveType, column);
 
-				//Update the board with our opponents move
+				// Update the board with our opponents move
 				board.makeMove(opponentsMove);
 			}
 
-			//When it is our turn, evaluate the best option and print out the move it is correlated with
+			// When it is our turn, evaluate the best option and print out the
+			// move it is correlated with
 			int maxDepthCounter = 1;
 			Move moveToMake = new Move(1, 0);
 			double endTime = timeRecieved + (MILLI_TO_SECONDS * timeLimit);
 
-			
-			//While we believe we still have time, run iterative minimax with alpha beta prunning
-			while (endTime > System.currentTimeMillis() + (Math.pow(1.5, maxDepthCounter)*MILLI_TO_SECONDS)) {
+			// While we believe we still have time, run iterative minimax with
+			// alpha beta prunning
+			while (endTime > System.currentTimeMillis() + (Math.pow(1.3, maxDepthCounter) * MILLI_TO_SECONDS)) {
 				int bestMoveVal = board.evaluateToDepth(0, maxDepthCounter, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
-				//Determine the corresponding best move based on the evaluation value returned
+				// Determine the corresponding best move based on the evaluation
+				// value returned
 				for (Board childBoard : board.getNextPossibleBoards()) {
 					if (childBoard.getEvaluationValue() == bestMoveVal) {
 						moveToMake = childBoard.getMoveToGetThisBoard();
@@ -115,49 +126,21 @@ public class Controller {
 					}
 				}
 				maxDepthCounter++;
-				
-				//We were unable to get depth 8 to run in a reasonable amount of time so always stop before depth 8 is run
-				/*if(maxDepthCounter == 8){
+
+				// We were unable to get depth 6-7 to run in a reasonable amount
+				// of time so always stop before depth 6 is run
+				if (maxDepthCounter == 6) {
 					break;
-				}*/
-				
+				}
 			}
 
-			//Update the board with the move we decided on
+			// Update the board with the move we decided on
 			board.makeMove(moveToMake);
-			/*catch(Exception E){
-				try {
-					System.setErr(new PrintStream("err.txt"));
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				//String message = E.toString().split(":")[0];
-				System.err.println(E);
-				E.printStackTrace();
-			}*/
-			
-			//Give our move to the referee
+			// Give our move to the referee
 			System.out.println(moveToMake.getCol() + " " + moveToMake.getType());
 			isOurTurn = false;
-
+			
 		}
 
-	}
-
-	//Generic testing method
-	public static void testEval()
-	{
-		Board testBoard = new Board(6, 7, 4);
-		testBoard.setPlace(5, 0, 1);
-		testBoard.setPlace(4, 0, 1);
-		testBoard.setPlace(3, 0, 1);
-		testBoard.setPlace(2, 0, 1);
-		//testBoard.setPlace(5, 3, 1);
-		//testBoard.setPlace(4, 2, 1);
-		testBoard.print();
-		System.err.println(testBoard.evaluateToDepth(0, 6, Integer.MIN_VALUE, Integer.MAX_VALUE));
-		testBoard.evaluate();
-		System.err.println(testBoard.getEvaluationValue());
 	}
 }
