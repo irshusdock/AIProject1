@@ -1,16 +1,12 @@
 
 //irshusdock & arkessler
 //Class that controls the core gameplay loop. Handles communication with the referee
-<<<<<<< HEAD
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-=======
-
->>>>>>> branch 'master' of https://github.com/irshusdock/AIProject1.git
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
